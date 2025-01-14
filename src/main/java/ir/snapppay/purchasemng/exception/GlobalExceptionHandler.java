@@ -22,4 +22,9 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
 	}
 
+	@ExceptionHandler(UserIdAlreadyExistException.class)
+	public ResponseEntity<String> handleDuplicateUserException(UserIdAlreadyExistException ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+	}
+
 }

@@ -5,7 +5,6 @@ import ir.snapppay.purchasemng.dto.TokenRequest;
 import ir.snapppay.purchasemng.dto.TokenResponse;
 import ir.snapppay.purchasemng.dto.UserAddRequest;
 import ir.snapppay.purchasemng.dto.UserAddResponse;
-import ir.snapppay.purchasemng.exception.UserIdAlreadyExistException;
 import ir.snapppay.purchasemng.service.UserService;
 import ir.snapppay.purchasemng.service.model.UserModel;
 import ir.snapppay.purchasemng.utility.JwtUtil;
@@ -42,11 +41,11 @@ public class UserController {
 
 	@PostMapping("/user-add")
 	public ResponseEntity<UserAddResponse> userAdd(@Valid @RequestBody UserAddRequest userAddRequest) {
-		if (service.findByUsername(userAddRequest.getUsername())) {
-			throw new UserIdAlreadyExistException("user with the given username already exists");
-		}
+		log.info("Create User Api called with username: {}", userAddRequest.getUsername());
 		UserModel userModel = service.save(mapper.toUserModel(userAddRequest));
-		return ResponseEntity.ok(mapper.toUserAddResponse(userModel));
+		UserAddResponse response = mapper.toUserAddResponse(userModel);
+		log.info("User Created successfully");
+		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("/token")
