@@ -2,17 +2,15 @@ package ir.snapppay.purchasemng.service.impl;
 
 import java.util.Optional;
 
-import ir.snapppay.purchasemng.dto.UserDto;
 import ir.snapppay.purchasemng.model.User;
 import ir.snapppay.purchasemng.repository.UserRepository;
 import ir.snapppay.purchasemng.service.UserService;
 import ir.snapppay.purchasemng.service.mapper.UserServiceMapper;
+import ir.snapppay.purchasemng.service.model.UserModel;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,12 +23,10 @@ public class UserServiceImpl implements UserService {
 	private final PasswordEncoder passwordEncoder;
 
 	@Override
-	@Transactional
-	public ResponseEntity<UserDto> save(UserDto dto) {
-		User user = mapper.toUser(dto, passwordEncoder.encode(dto.getPassword()));
-		User savedUser = repository.save(user);
-		dto.setPassword("******");
-		return ResponseEntity.ok(dto);
+	public UserModel save(UserModel model) {
+		User user = mapper.toUser(model, passwordEncoder.encode(model.getPassword()));
+		user = repository.save(user);
+		return mapper.toUserModel(user);
 	}
 
 	@Override

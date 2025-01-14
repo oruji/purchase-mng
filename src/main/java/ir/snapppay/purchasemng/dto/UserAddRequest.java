@@ -1,15 +1,15 @@
 package ir.snapppay.purchasemng.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class UserDto {
+public class UserAddRequest {
 
-	@NotEmpty
+	@NotBlank
 	private String username;
 
-	@NotEmpty
+	@NotBlank
 	private String password;
 
 }

@@ -6,6 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,9 +28,12 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long userId;
 
-	@Column(unique = true, length = 20)
+	@NotNull
+	@Column(nullable = false, unique = true, length = 20)
 	private String username;
 
+	@NotNull
+	@Column(nullable = false)
 	private String password;
 
 }

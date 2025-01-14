@@ -1,11 +1,15 @@
 package ir.snapppay.purchasemng.controller;
 
-import ir.snapppay.purchasemng.dto.AuthenticationRequest;
-import ir.snapppay.purchasemng.dto.AuthenticationResponse;
-import ir.snapppay.purchasemng.dto.UserDto;
+import ir.snapppay.purchasemng.controller.mapper.UserControllerMapper;
+import ir.snapppay.purchasemng.dto.TokenRequest;
+import ir.snapppay.purchasemng.dto.TokenResponse;
+import ir.snapppay.purchasemng.dto.UserAddRequest;
+import ir.snapppay.purchasemng.dto.UserAddResponse;
 import ir.snapppay.purchasemng.exception.UserIdAlreadyExistException;
 import ir.snapppay.purchasemng.service.UserService;
+import ir.snapppay.purchasemng.service.model.UserModel;
 import ir.snapppay.purchasemng.utility.JwtUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,23 +32,26 @@ public class UserController {
 
 	private final UserService service;
 
+	private final UserControllerMapper mapper;
+
 	private final AuthenticationManager authenticationManager;
 
 	private final JwtUtil jwtUtil;
 
 	private final UserDetailsService userDetailsService;
 
-	@PostMapping("/add-user")
-	public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto) {
-		if (service.findByUsername(userDto.getUsername())) {
-			throw new UserIdAlreadyExistException("Username is already taken");
+	@PostMapping("/user-add")
+	public ResponseEntity<UserAddResponse> userAdd(@Valid @RequestBody UserAddRequest userAddRequest) {
+		if (service.findByUsername(userAddRequest.getUsername())) {
+			throw new UserIdAlreadyExistException("user with the given username already exists");
 		}
-		return service.save(userDto);
+		UserModel userModel = service.save(mapper.toUserModel(userAddRequest));
+		return ResponseEntity.ok(mapper.toUserAddResponse(userModel));
 	}
 
 	@PostMapping("/token")
-	public ResponseEntity<AuthenticationResponse> getToken(
-			@RequestBody AuthenticationRequest request) throws BadCredentialsException {
+	public ResponseEntity<TokenResponse> getToken(
+			@Valid @RequestBody TokenRequest request) throws BadCredentialsException {
 		try {
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
 					request.getUsername(), request.getPassword()));
@@ -56,7 +63,7 @@ public class UserController {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
 		final String jwt = jwtUtil.generateToken(userDetails);
 
-		return ResponseEntity.ok(new AuthenticationResponse(jwt));
+		return ResponseEntity.ok(new TokenResponse(jwt));
 	}
 
 }

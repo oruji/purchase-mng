@@ -1,5 +1,6 @@
 package ir.snapppay.purchasemng.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,10 +8,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationRequest {
+public class TokenRequest {
 
+	@NotBlank
 	private String username;
 
+	@NotBlank
 	private String password;
 
 }
