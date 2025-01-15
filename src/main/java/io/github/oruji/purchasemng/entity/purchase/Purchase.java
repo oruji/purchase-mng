@@ -40,4 +40,8 @@ public class Purchase extends BaseEntity {
 		this.setStatus(PurchaseStatus.VERIFIED);
 	}
 
+	public void reverse() {
+		this.setStatus(PurchaseStatus.REVERSED);
+	}
+
 }

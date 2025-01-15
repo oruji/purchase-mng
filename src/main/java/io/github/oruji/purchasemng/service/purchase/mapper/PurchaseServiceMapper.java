@@ -1,5 +1,7 @@
 package io.github.oruji.purchasemng.service.purchase.mapper;
 
+import java.util.List;
+
 import io.github.oruji.purchasemng.entity.purchase.Purchase;
 import io.github.oruji.purchasemng.service.purchase.model.PurchaseModel;
 import org.mapstruct.Mapper;
@@ -19,4 +21,5 @@ public interface PurchaseServiceMapper {
 
 	PurchaseModel toPurchaseModel(Purchase purchase);
 
+	List<PurchaseModel> toPurchaseModels(List<Purchase> purchases);
 }
