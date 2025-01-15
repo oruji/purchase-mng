@@ -36,10 +36,10 @@ public class User extends BaseEntity {
 
 	@NotNull
 	@Column(nullable = false)
-	private BigDecimal balance;
+	private BigDecimal balance = new BigDecimal(0);
 
 	public void deposit(BigDecimal amount) {
-		balance = balance.add(amount);
+		setBalance(balance.add(amount));
 	}
 
 	public void withdraw(BigDecimal amount) {
