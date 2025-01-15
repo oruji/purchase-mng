@@ -59,9 +59,14 @@ public class PurchaseServiceImpl implements PurchaseService {
 	}
 
 	@Override
+	@Transactional
 	public void reverse(PurchaseModel model) {
 		Purchase purchase = repository.findByTrackingCode(model.getTrackingCode())
 				.orElseThrow(() -> new PurchaseNotFoundException("Purchase Not found!"));
+		User user = purchase.getUser();
+		user.setBalance(user.getBalance().add(purchase.getAmount()));
+		user = userService.save(user);
+		purchase.setUser(user);
 		purchase.reverse();
 		repository.save(purchase);
 	}
