@@ -31,6 +31,11 @@ public class User extends BaseEntity {
 	private String password;
 
 	@NotNull
+	@Column(nullable = false)
+	private BigDecimal initialBalance;
+
+	@NotNull
+	@Column(nullable = false)
 	private BigDecimal balance;
 
 }

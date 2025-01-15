@@ -11,6 +11,8 @@ public class UserModel {
 
 	private String password;
 
+	private BigDecimal initialBalance;
+
 	private BigDecimal balance;
 
 }

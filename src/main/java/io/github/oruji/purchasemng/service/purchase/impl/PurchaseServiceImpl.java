@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -31,6 +32,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 	private final UserService userService;
 
 	@Override
+	@Transactional
 	public PurchaseModel save(PurchaseModel model) {
 		User user = userService.findByUsername(model.getUser().getUsername());
 		user.setBalance(user.getBalance().subtract(model.getAmount()));
