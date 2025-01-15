@@ -11,6 +11,8 @@ public interface PurchaseServiceMapper {
 
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "status", ignore = true)
+	@Mapping(target = "creationDate", ignore = true)
+	@Mapping(target = "modificationDate", ignore = true)
 	@Mapping(target = "trackingCode", source = "trackingCode")
 	@Mapping(target = "amount", source = "model.amount")
 	Purchase toPurchase(PurchaseModel model, String trackingCode);

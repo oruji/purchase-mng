@@ -2,13 +2,11 @@ package ir.snapppay.purchasemng.entity.purchase;
 
 import java.math.BigDecimal;
 
+import ir.snapppay.purchasemng.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -20,15 +18,11 @@ import lombok.ToString;
 @Entity
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "PURCHASES")
-public class Purchase {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+public class Purchase extends BaseEntity {
 
 	@NotNull
 	@Column(nullable = false)
