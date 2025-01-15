@@ -6,11 +6,13 @@ import java.util.UUID;
 
 import io.github.oruji.purchasemng.entity.purchase.Purchase;
 import io.github.oruji.purchasemng.entity.purchase.PurchaseStatus;
+import io.github.oruji.purchasemng.entity.user.User;
 import io.github.oruji.purchasemng.exception.PurchaseNotFoundException;
 import io.github.oruji.purchasemng.repository.purchase.PurchaseRepository;
 import io.github.oruji.purchasemng.service.purchase.PurchaseService;
 import io.github.oruji.purchasemng.service.purchase.mapper.PurchaseServiceMapper;
 import io.github.oruji.purchasemng.service.purchase.model.PurchaseModel;
+import io.github.oruji.purchasemng.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,9 +28,12 @@ public class PurchaseServiceImpl implements PurchaseService {
 
 	private final PurchaseServiceMapper mapper;
 
+	private final UserService userService;
+
 	@Override
 	public PurchaseModel save(PurchaseModel model) {
-		Purchase purchase = mapper.toPurchase(model, UUID.randomUUID().toString());
+		User user = userService.findByUsername(model.getUser().getUsername());
+		Purchase purchase = mapper.toPurchase(model, UUID.randomUUID().toString(), user);
 		purchase = repository.save(purchase);
 		return mapper.toPurchaseModel(purchase);
 	}

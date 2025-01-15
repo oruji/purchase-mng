@@ -34,6 +34,10 @@ public class JwtUtil {
 		return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
 	}
 
+	public String getUsernameFromToken(String token) {
+		return extractAllClaims(token.substring(7)).getSubject();
+	}
+
 	private SecretKey getSigningKey() {
 		return Keys.hmacShaKeyFor(secret.getBytes());
 	}

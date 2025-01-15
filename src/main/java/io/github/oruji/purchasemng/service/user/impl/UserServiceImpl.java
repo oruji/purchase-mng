@@ -1,10 +1,11 @@
 package io.github.oruji.purchasemng.service.user.impl;
 
+import io.github.oruji.purchasemng.entity.user.User;
 import io.github.oruji.purchasemng.exception.UserIdAlreadyExistException;
+import io.github.oruji.purchasemng.exception.UserNotFoundException;
 import io.github.oruji.purchasemng.repository.user.UserRepository;
 import io.github.oruji.purchasemng.service.user.UserService;
 import io.github.oruji.purchasemng.service.user.mapper.UserServiceMapper;
-import io.github.oruji.purchasemng.entity.user.User;
 import io.github.oruji.purchasemng.service.user.model.UserModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,12 @@ public class UserServiceImpl implements UserService {
 		User user = mapper.toUser(model, passwordEncoder.encode(model.getPassword()));
 		user = repository.save(user);
 		return mapper.toUserModel(user);
+	}
+
+	@Override
+	public User findByUsername(String username) {
+		return repository.findByUsername(username)
+				.orElseThrow(() -> new UserNotFoundException("There is not user for username: " + username));
 	}
 
 }

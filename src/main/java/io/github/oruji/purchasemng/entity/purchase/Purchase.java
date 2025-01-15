@@ -3,10 +3,12 @@ package io.github.oruji.purchasemng.entity.purchase;
 import java.math.BigDecimal;
 
 import io.github.oruji.purchasemng.entity.BaseEntity;
+import io.github.oruji.purchasemng.entity.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -35,6 +37,9 @@ public class Purchase extends BaseEntity {
 	@Column(nullable = false)
 	@Enumerated(EnumType.ORDINAL)
 	private PurchaseStatus status = PurchaseStatus.INITIATED;
+
+	@ManyToOne
+	private User user;
 
 	public void verify() {
 		this.setStatus(PurchaseStatus.VERIFIED);

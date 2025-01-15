@@ -5,6 +5,7 @@ import io.github.oruji.purchasemng.service.purchase.PurchaseService;
 import io.github.oruji.purchasemng.service.purchase.model.PurchaseModel;
 import io.github.oruji.purchasemng.dto.purchase.PurchaseCreationRequest;
 import io.github.oruji.purchasemng.dto.purchase.PurchaseCreationResponse;
+import io.github.oruji.purchasemng.utility.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,10 +28,14 @@ public class PurchaseController {
 
 	private final PurchaseControllerMapper mapper;
 
+	private final JwtUtil jwtUtil;
+
 	@PostMapping()
-	public ResponseEntity<PurchaseCreationResponse> create(@Valid @RequestBody PurchaseCreationRequest request) {
+	public ResponseEntity<PurchaseCreationResponse> create(@RequestHeader("Authorization") String authorizationHeader,
+			@Valid @RequestBody PurchaseCreationRequest request) {
 		log.info("Create Purchase Api called: {}", request);
-		PurchaseModel model = service.save(mapper.toPurchaseModel(request));
+		String username = jwtUtil.getUsernameFromToken(authorizationHeader);
+		PurchaseModel model = service.save(mapper.toPurchaseModel(request, username));
 		PurchaseCreationResponse response = mapper.toCreatePurchaseResponse(model);
 		log.info("Purchase Created successfully");
 		return ResponseEntity.ok(response);
