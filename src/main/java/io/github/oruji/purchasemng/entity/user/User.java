@@ -1,5 +1,7 @@
 package io.github.oruji.purchasemng.entity.user;
 
+import java.math.BigDecimal;
+
 import io.github.oruji.purchasemng.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,5 +29,8 @@ public class User extends BaseEntity {
 	@NotNull
 	@Column(nullable = false)
 	private String password;
+
+	@NotNull
+	private BigDecimal balance;
 
 }
