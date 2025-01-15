@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
 	private final UserService service;
 
 	private final UserControllerMapper mapper;
 
-	@PostMapping("")
+	@PostMapping()
 	public ResponseEntity<CreateUserResponse> create(@Valid @RequestBody CreateUserRequest request) {
 		log.info("Create User Api called with username: {}", request.getUsername());
 		UserModel userModel = service.save(mapper.toUserModel(request));

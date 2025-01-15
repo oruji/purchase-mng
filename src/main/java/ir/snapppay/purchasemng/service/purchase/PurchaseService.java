@@ -6,4 +6,5 @@ public interface PurchaseService {
 
 	PurchaseModel save(PurchaseModel model);
 
+	PurchaseModel verify(String trackingCode);
 }

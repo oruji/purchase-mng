@@ -5,7 +5,9 @@ import java.math.BigDecimal;
 import lombok.Data;
 
 @Data
-public class CreatePurchaseResponse {
+public class PurchaseCreationResponse {
+
+	private String trackingCode;
 
 	private BigDecimal amount;
 

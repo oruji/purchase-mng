@@ -1,7 +1,7 @@
 package ir.snapppay.purchasemng.controller.purchase.mapper;
 
-import ir.snapppay.purchasemng.dto.purchase.CreatePurchaseRequest;
-import ir.snapppay.purchasemng.dto.purchase.CreatePurchaseResponse;
+import ir.snapppay.purchasemng.dto.purchase.PurchaseCreationRequest;
+import ir.snapppay.purchasemng.dto.purchase.PurchaseCreationResponse;
 import ir.snapppay.purchasemng.entity.purchase.PurchaseStatus;
 import ir.snapppay.purchasemng.service.purchase.model.PurchaseModel;
 import org.mapstruct.Mapper;
@@ -12,9 +12,10 @@ import org.mapstruct.ReportingPolicy;
 public interface PurchaseControllerMapper {
 
 	@Mapping(target = "status", ignore = true)
-	PurchaseModel toPurchaseModel(CreatePurchaseRequest request);
+	@Mapping(target = "trackingCode", ignore = true)
+	PurchaseModel toPurchaseModel(PurchaseCreationRequest request);
 
-	CreatePurchaseResponse toCreatePurchaseResponse(PurchaseModel purchaseModel);
+	PurchaseCreationResponse toCreatePurchaseResponse(PurchaseModel model);
 
 	default PurchaseStatus toStatus(Integer statusCode) {
 		if (statusCode == null) {

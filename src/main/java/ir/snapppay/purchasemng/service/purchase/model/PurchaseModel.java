@@ -8,6 +8,8 @@ import lombok.Data;
 @Data
 public class PurchaseModel {
 
+	private String trackingCode;
+
 	private BigDecimal amount;
 
 	private PurchaseStatus status;

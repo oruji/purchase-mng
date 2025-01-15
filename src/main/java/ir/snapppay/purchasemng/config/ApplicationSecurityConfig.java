@@ -30,8 +30,8 @@ public class ApplicationSecurityConfig {
 		httpSecurity.csrf(AbstractHttpConfigurer::disable)
 				.authorizeHttpRequests(requests ->
 						requests.requestMatchers(
-										"/tokens",
-										"/users",
+										"/api/tokens",
+										"/api/users",
 										"/swagger-ui.html",
 										"/swagger-ui/**",
 										"/v3/api-docs",

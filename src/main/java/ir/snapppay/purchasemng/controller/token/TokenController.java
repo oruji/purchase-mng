@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/tokens")
+@RequestMapping("/api/tokens")
 public class TokenController {
 
 	private final AuthenticationManager authenticationManager;

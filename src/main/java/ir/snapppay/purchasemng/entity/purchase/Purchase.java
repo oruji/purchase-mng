@@ -32,10 +32,18 @@ public class Purchase {
 
 	@NotNull
 	@Column(nullable = false)
+	private String trackingCode;
+
+	@NotNull
+	@Column(nullable = false)
 	private BigDecimal amount;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.ORDINAL)
 	private PurchaseStatus status = PurchaseStatus.INITIATED;
+
+	public void verify() {
+		this.setStatus(PurchaseStatus.VERIFIED);
+	}
 
 }

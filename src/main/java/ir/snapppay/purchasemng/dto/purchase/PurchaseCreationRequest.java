@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class CreatePurchaseRequest {
+public class PurchaseCreationRequest {
 
 	@NotNull
 	private BigDecimal amount;
