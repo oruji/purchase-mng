@@ -1,7 +1,11 @@
-package ir.snapppay.purchasemng.entity.user;
+package ir.snapppay.purchasemng.entity.purchase;
+
+import java.math.BigDecimal;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,19 +23,19 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "USERS")
-public class User {
+@Table(name = "PURCHASES")
+public class Purchase {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 
 	@NotNull
-	@Column(nullable = false, unique = true, length = 20)
-	private String username;
-
-	@NotNull
 	@Column(nullable = false)
-	private String password;
+	private BigDecimal amount;
+
+	@Column(nullable = false)
+	@Enumerated(EnumType.ORDINAL)
+	private PurchaseStatus status;
 
 }
