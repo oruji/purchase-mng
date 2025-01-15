@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ir.snapppay.purchasemng.model.User;
+import ir.snapppay.purchasemng.entity.user.User;
 import ir.snapppay.purchasemng.utility.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

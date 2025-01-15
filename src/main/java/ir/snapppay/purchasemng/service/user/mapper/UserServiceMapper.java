@@ -1,7 +1,7 @@
-package ir.snapppay.purchasemng.service.mapper;
+package ir.snapppay.purchasemng.service.user.mapper;
 
-import ir.snapppay.purchasemng.model.User;
-import ir.snapppay.purchasemng.service.model.UserModel;
+import ir.snapppay.purchasemng.entity.user.User;
+import ir.snapppay.purchasemng.service.user.model.UserModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;

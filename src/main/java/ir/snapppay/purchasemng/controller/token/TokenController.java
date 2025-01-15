@@ -1,12 +1,7 @@
-package ir.snapppay.purchasemng.controller;
+package ir.snapppay.purchasemng.controller.token;
 
-import ir.snapppay.purchasemng.controller.mapper.UserControllerMapper;
-import ir.snapppay.purchasemng.dto.TokenRequest;
-import ir.snapppay.purchasemng.dto.TokenResponse;
-import ir.snapppay.purchasemng.dto.UserAddRequest;
-import ir.snapppay.purchasemng.dto.UserAddResponse;
-import ir.snapppay.purchasemng.service.UserService;
-import ir.snapppay.purchasemng.service.model.UserModel;
+import ir.snapppay.purchasemng.dto.token.TokenRequest;
+import ir.snapppay.purchasemng.dto.token.TokenResponse;
 import ir.snapppay.purchasemng.utility.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auth")
-public class UserController {
-
-	private final UserService service;
-
-	private final UserControllerMapper mapper;
+@RequestMapping("/tokens")
+public class TokenController {
 
 	private final AuthenticationManager authenticationManager;
 
@@ -39,16 +30,7 @@ public class UserController {
 
 	private final UserDetailsService userDetailsService;
 
-	@PostMapping("/user-add")
-	public ResponseEntity<UserAddResponse> userAdd(@Valid @RequestBody UserAddRequest userAddRequest) {
-		log.info("Create User Api called with username: {}", userAddRequest.getUsername());
-		UserModel userModel = service.save(mapper.toUserModel(userAddRequest));
-		UserAddResponse response = mapper.toUserAddResponse(userModel);
-		log.info("User Created successfully");
-		return ResponseEntity.ok(response);
-	}
-
-	@PostMapping("/token")
+	@PostMapping()
 	public ResponseEntity<TokenResponse> getToken(
 			@Valid @RequestBody TokenRequest request) throws BadCredentialsException {
 		try {

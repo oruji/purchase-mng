@@ -1,4 +1,4 @@
-package ir.snapppay.purchasemng.service.model;
+package ir.snapppay.purchasemng.service.user.model;
 
 import lombok.Data;
 

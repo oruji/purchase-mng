@@ -1,11 +1,11 @@
-package ir.snapppay.purchasemng.service.impl;
+package ir.snapppay.purchasemng.service.user.impl;
 
 import ir.snapppay.purchasemng.exception.UserIdAlreadyExistException;
-import ir.snapppay.purchasemng.model.User;
-import ir.snapppay.purchasemng.repository.UserRepository;
-import ir.snapppay.purchasemng.service.UserService;
-import ir.snapppay.purchasemng.service.mapper.UserServiceMapper;
-import ir.snapppay.purchasemng.service.model.UserModel;
+import ir.snapppay.purchasemng.entity.user.User;
+import ir.snapppay.purchasemng.repository.user.UserRepository;
+import ir.snapppay.purchasemng.service.user.UserService;
+import ir.snapppay.purchasemng.service.user.mapper.UserServiceMapper;
+import ir.snapppay.purchasemng.service.user.model.UserModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

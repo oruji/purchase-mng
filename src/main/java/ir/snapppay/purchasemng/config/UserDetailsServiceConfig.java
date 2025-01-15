@@ -3,8 +3,8 @@ package ir.snapppay.purchasemng.config;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import ir.snapppay.purchasemng.model.User;
-import ir.snapppay.purchasemng.repository.UserRepository;
+import ir.snapppay.purchasemng.entity.user.User;
+import ir.snapppay.purchasemng.repository.user.UserRepository;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

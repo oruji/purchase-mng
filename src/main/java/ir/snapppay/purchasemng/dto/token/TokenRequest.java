@@ -1,4 +1,4 @@
-package ir.snapppay.purchasemng.dto;
+package ir.snapppay.purchasemng.dto.token;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
