@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum PurchaseStatus {
 
-	INITIATED(0), REVERSED(1), VERIFIED(2);
+	INITIATED(0), REVERSED(1), VERIFIED(2), EXPIRED(3);
 
 	private final Integer value;
 

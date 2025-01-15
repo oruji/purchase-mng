@@ -28,7 +28,7 @@ public class Purchase {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+	private Long id;
 
 	@NotNull
 	@Column(nullable = false)
@@ -36,6 +36,6 @@ public class Purchase {
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.ORDINAL)
-	private PurchaseStatus status;
+	private PurchaseStatus status = PurchaseStatus.INITIATED;
 
 }

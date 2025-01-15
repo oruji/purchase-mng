@@ -11,7 +11,7 @@ public interface UserServiceMapper {
 
 	@Mapping(target = "username", source = "model.username")
 	@Mapping(target = "password", source = "password")
-	@Mapping(target = "userId", ignore = true)
+	@Mapping(target = "id", ignore = true)
 	User toUser(UserModel model, String password);
 
 	UserModel toUserModel(User savedUser);
