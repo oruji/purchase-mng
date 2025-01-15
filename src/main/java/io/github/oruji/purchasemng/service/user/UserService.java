@@ -8,4 +8,6 @@ public interface UserService {
 	UserModel save(UserModel model);
 
 	User findByUsername(String username);
+
+	User save(User user);
 }

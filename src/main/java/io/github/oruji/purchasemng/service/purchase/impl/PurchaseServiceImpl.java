@@ -33,6 +33,8 @@ public class PurchaseServiceImpl implements PurchaseService {
 	@Override
 	public PurchaseModel save(PurchaseModel model) {
 		User user = userService.findByUsername(model.getUser().getUsername());
+		user.setBalance(user.getBalance().subtract(model.getAmount()));
+		user = userService.save(user);
 		Purchase purchase = mapper.toPurchase(model, UUID.randomUUID().toString(), user);
 		purchase = repository.save(purchase);
 		return mapper.toPurchaseModel(purchase);
