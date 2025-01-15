@@ -34,10 +34,12 @@ public class Purchase extends BaseEntity {
 	@Column(nullable = false)
 	private BigDecimal amount;
 
+	@NotNull
 	@Column(nullable = false)
 	@Enumerated(EnumType.ORDINAL)
 	private PurchaseStatus status = PurchaseStatus.INITIATED;
 
+	@NotNull
 	@ManyToOne
 	private User user;
 

@@ -1,10 +1,14 @@
-package io.github.oruji.purchasemng.entity.user;
+package io.github.oruji.purchasemng.entity.transaction;
 
 import java.math.BigDecimal;
 
 import io.github.oruji.purchasemng.entity.BaseEntity;
+import io.github.oruji.purchasemng.entity.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -14,36 +18,25 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "USERS")
+@Table(name = "TRANSACTIONS")
 @Getter
 @Setter
 @ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends BaseEntity {
-
-	@NotNull
-	@Column(nullable = false, unique = true, length = 20)
-	private String username;
+public class Transaction extends BaseEntity {
 
 	@NotNull
 	@Column(nullable = false)
-	private String password;
+	private BigDecimal amount;
 
 	@NotNull
 	@Column(nullable = false)
-	private BigDecimal initialBalance;
+	@Enumerated(EnumType.ORDINAL)
+	private TransactionType type;
 
 	@NotNull
-	@Column(nullable = false)
-	private BigDecimal balance;
-
-	public void deposit(BigDecimal amount) {
-		balance = balance.add(amount);
-	}
-
-	public void withdraw(BigDecimal amount) {
-		balance = balance.subtract(amount);
-	}
+	@ManyToOne
+	private User user;
 
 }

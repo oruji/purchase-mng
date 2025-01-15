@@ -6,12 +6,16 @@ import java.util.UUID;
 
 import io.github.oruji.purchasemng.entity.purchase.Purchase;
 import io.github.oruji.purchasemng.entity.purchase.PurchaseStatus;
+import io.github.oruji.purchasemng.entity.transaction.Transaction;
+import io.github.oruji.purchasemng.entity.transaction.TransactionType;
 import io.github.oruji.purchasemng.entity.user.User;
 import io.github.oruji.purchasemng.exception.PurchaseNotFoundException;
 import io.github.oruji.purchasemng.repository.purchase.PurchaseRepository;
 import io.github.oruji.purchasemng.service.purchase.PurchaseService;
 import io.github.oruji.purchasemng.service.purchase.mapper.PurchaseServiceMapper;
 import io.github.oruji.purchasemng.service.purchase.model.PurchaseModel;
+import io.github.oruji.purchasemng.service.transaction.TransactionService;
+import io.github.oruji.purchasemng.service.transaction.mapper.TransactionServiceMapper;
 import io.github.oruji.purchasemng.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,14 +35,21 @@ public class PurchaseServiceImpl implements PurchaseService {
 
 	private final UserService userService;
 
+	private final TransactionService transactionService;
+
+	private final TransactionServiceMapper transactionServiceMapper;
+
 	@Override
 	@Transactional
 	public PurchaseModel save(PurchaseModel model) {
 		User user = userService.findByUsername(model.getUser().getUsername());
-		user.setBalance(user.getBalance().subtract(model.getAmount()));
+		user.withdraw(model.getAmount());
 		user = userService.save(user);
 		Purchase purchase = mapper.toPurchase(model, UUID.randomUUID().toString(), user);
 		purchase = repository.save(purchase);
+		Transaction transaction = transactionServiceMapper.toTransaction(user, model.getAmount(),
+				TransactionType.PURCHASE);
+		transactionService.save(transaction);
 		return mapper.toPurchaseModel(purchase);
 	}
 
@@ -64,11 +75,14 @@ public class PurchaseServiceImpl implements PurchaseService {
 		Purchase purchase = repository.findByTrackingCode(model.getTrackingCode())
 				.orElseThrow(() -> new PurchaseNotFoundException("Purchase Not found!"));
 		User user = purchase.getUser();
-		user.setBalance(user.getBalance().add(purchase.getAmount()));
+		user.deposit(purchase.getAmount());
 		user = userService.save(user);
 		purchase.setUser(user);
 		purchase.reverse();
 		repository.save(purchase);
+		Transaction transaction = transactionServiceMapper.toTransaction(user, model.getAmount(),
+				TransactionType.REVERSE);
+		transactionService.save(transaction);
 	}
 
 }

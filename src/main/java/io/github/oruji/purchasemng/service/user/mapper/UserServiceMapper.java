@@ -11,11 +11,11 @@ public interface UserServiceMapper {
 
 	@Mapping(target = "username", source = "model.username")
 	@Mapping(target = "password", source = "password")
-	@Mapping(target = "balance", source = "model.balance")
 	@Mapping(target = "initialBalance", source = "model.initialBalance")
 	@Mapping(target = "creationDate", ignore = true)
 	@Mapping(target = "modificationDate", ignore = true)
 	@Mapping(target = "id", ignore = true)
+	@Mapping(target = "balance", ignore = true)
 	User toUser(UserModel model, String password);
 
 	UserModel toUserModel(User savedUser);
