@@ -1,6 +1,7 @@
 package io.github.oruji.purchasemng.service.purchase.impl;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import io.github.oruji.purchasemng.entity.purchase.Purchase;
 import io.github.oruji.purchasemng.entity.purchase.PurchaseStatus;
@@ -29,7 +30,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -79,6 +82,61 @@ class PurchaseServiceImplTest {
 		assertEquals(TransactionStatus.PENDING, transactionCapture.getValue().getStatus());
 		assertEquals(TransactionType.PURCHASE, transactionCapture.getValue().getType());
 		assertNotNull(transactionCapture.getValue().getTrackingCode());
+	}
+
+	@Test
+	void givenPurchaseTrackingcode_whenVerify_thenSuccess() {
+		String trackingCode = "my-test-purchase-tracking-code";
+		Purchase purchase = createPurchase(new BigDecimal(10_000), "my-test-user-name", trackingCode,
+				PurchaseStatus.INITIATED);
+		when(purchaseRepository.findByTrackingCode(trackingCode)).thenReturn(Optional.of(purchase));
+		when(transactionService.findByPurchase(any())).thenReturn(createTransaction(new BigDecimal(10_000)));
+
+		purchaseService.verify(trackingCode);
+
+		ArgumentCaptor<Purchase> purchaseCapture = ArgumentCaptor.forClass(Purchase.class);
+		verify(purchaseRepository).save(purchaseCapture.capture());
+		assertEquals(new BigDecimal(10_000), purchaseCapture.getValue().getAmount());
+		assertEquals(PurchaseStatus.VERIFIED, purchaseCapture.getValue().getStatus());
+		assertNotNull(purchaseCapture.getValue().getTrackingCode());
+
+		ArgumentCaptor<Transaction> transactionCapture = ArgumentCaptor.forClass(Transaction.class);
+		verify(transactionService).save(transactionCapture.capture());
+		assertEquals(new BigDecimal(10_000), transactionCapture.getValue().getAmount());
+		assertEquals(TransactionStatus.SUCCESSFUL, transactionCapture.getValue().getStatus());
+		assertEquals(TransactionType.PURCHASE, transactionCapture.getValue().getType());
+		assertNotNull(transactionCapture.getValue().getTrackingCode());
+	}
+
+	@Test
+	void givenVerifiedPurchaseTrackingcode_whenVerify_thenIdempotent() {
+		String trackingCode = "my-test-purchase-tracking-code";
+		Purchase purchase = createPurchase(new BigDecimal(10_000), "my-test-user-name", trackingCode,
+				PurchaseStatus.VERIFIED);
+		when(purchaseRepository.findByTrackingCode(trackingCode)).thenReturn(Optional.of(purchase));
+		PurchaseModel purchaseModel = purchaseService.verify(trackingCode);
+		assertEquals(new BigDecimal(10_000), purchaseModel.getAmount());
+		assertEquals(PurchaseStatus.VERIFIED, purchaseModel.getStatus());
+		verifyNoInteractions(transactionService);
+	}
+
+	private Transaction createTransaction(BigDecimal amount) {
+		Transaction transaction = new Transaction();
+		transaction.setType(TransactionType.PURCHASE);
+		transaction.setStatus(TransactionStatus.PENDING);
+		transaction.setAmount(amount);
+		transaction.setTrackingCode("my-test-transaction-tracking-code");
+		return transaction;
+	}
+
+	private Purchase createPurchase(BigDecimal amount, String username, String trackingCode,
+			PurchaseStatus purchaseStatus) {
+		Purchase purchase = new Purchase();
+		purchase.setUser(createUser(username, "password"));
+		purchase.setAmount(amount);
+		purchase.setTrackingCode(trackingCode);
+		purchase.setStatus(purchaseStatus);
+		return purchase;
 	}
 
 	private PurchaseModel createPurchaseModel(BigDecimal amount, String username) {

@@ -66,6 +66,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 		if (!purchase.isVerfied()) {
 			purchase.verify();
 			purchase = purchaseRepository.save(purchase);
+
 			Transaction transaction = transactionService.findByPurchase(purchase);
 			transaction.successful();
 			transactionService.save(transaction);
@@ -85,12 +86,15 @@ public class PurchaseServiceImpl implements PurchaseService {
 	public void reverse(PurchaseModel model) {
 		Purchase purchase = purchaseRepository.findByTrackingCode(model.getTrackingCode())
 				.orElseThrow(() -> new PurchaseNotFoundException("Purchase Not found!"));
+
 		User user = purchase.getUser();
 		user.deposit(purchase.getAmount());
 		user = userService.save(user);
+
 		purchase.setUser(user);
 		purchase.reverse();
 		purchaseRepository.save(purchase);
+
 		Transaction transaction = transactionService.findByPurchase(purchase);
 		transaction.failed();
 		transactionService.save(transaction);
