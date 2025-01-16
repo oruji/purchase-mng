@@ -47,8 +47,10 @@ public class PurchaseServiceImpl implements PurchaseService {
 		user = userService.save(user);
 		Purchase purchase = mapper.toPurchase(model, UUID.randomUUID().toString(), user);
 		purchase = repository.save(purchase);
-		Transaction transaction = transactionServiceMapper.toTransaction(user, model.getAmount(),
+		Transaction transaction = transactionServiceMapper.toTransaction(user, purchase, model.getAmount(),
 				TransactionType.PURCHASE);
+		transaction.setTrackingCode(UUID.randomUUID().toString());
+		transaction.pending();
 		transactionService.save(transaction);
 		return mapper.toPurchaseModel(purchase);
 	}
@@ -59,6 +61,9 @@ public class PurchaseServiceImpl implements PurchaseService {
 				.orElseThrow(() -> new PurchaseNotFoundException("Purchase Not found!"));
 		purchase.verify();
 		purchase = repository.save(purchase);
+		Transaction transaction = transactionService.findByPurchase(purchase);
+		transaction.successful();
+		transactionService.save(transaction);
 		return mapper.toPurchaseModel(purchase);
 	}
 
@@ -80,8 +85,8 @@ public class PurchaseServiceImpl implements PurchaseService {
 		purchase.setUser(user);
 		purchase.reverse();
 		repository.save(purchase);
-		Transaction transaction = transactionServiceMapper.toTransaction(user, model.getAmount(),
-				TransactionType.REVERSE);
+		Transaction transaction = transactionService.findByPurchase(purchase);
+		transaction.failed();
 		transactionService.save(transaction);
 	}
 

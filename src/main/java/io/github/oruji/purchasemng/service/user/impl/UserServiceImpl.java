@@ -1,5 +1,7 @@
 package io.github.oruji.purchasemng.service.user.impl;
 
+import java.util.UUID;
+
 import io.github.oruji.purchasemng.entity.transaction.Transaction;
 import io.github.oruji.purchasemng.entity.transaction.TransactionType;
 import io.github.oruji.purchasemng.entity.user.User;
@@ -45,6 +47,8 @@ public class UserServiceImpl implements UserService {
 		user = repository.save(user);
 		Transaction transaction = transactionServiceMapper.toTransaction(user, model.getInitialBalance(),
 				TransactionType.ALLOCATION);
+		transaction.successful();
+		transaction.setTrackingCode(UUID.randomUUID().toString());
 		transactionService.save(transaction);
 		return mapper.toUserModel(user);
 	}
