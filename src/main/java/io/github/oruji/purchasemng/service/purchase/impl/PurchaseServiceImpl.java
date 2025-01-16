@@ -59,11 +59,13 @@ public class PurchaseServiceImpl implements PurchaseService {
 	public PurchaseModel verify(String trackingCode) {
 		Purchase purchase = repository.findByTrackingCode(trackingCode)
 				.orElseThrow(() -> new PurchaseNotFoundException("Purchase Not found!"));
-		purchase.verify();
-		purchase = repository.save(purchase);
-		Transaction transaction = transactionService.findByPurchase(purchase);
-		transaction.successful();
-		transactionService.save(transaction);
+		if (!purchase.isVerfied()) {
+			purchase.verify();
+			purchase = repository.save(purchase);
+			Transaction transaction = transactionService.findByPurchase(purchase);
+			transaction.successful();
+			transactionService.save(transaction);
+		}
 		return mapper.toPurchaseModel(purchase);
 	}
 
