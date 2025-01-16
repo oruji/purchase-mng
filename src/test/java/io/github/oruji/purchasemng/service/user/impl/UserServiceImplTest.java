@@ -3,6 +3,9 @@ package io.github.oruji.purchasemng.service.user.impl;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+import io.github.oruji.purchasemng.entity.transaction.Transaction;
+import io.github.oruji.purchasemng.entity.transaction.TransactionStatus;
+import io.github.oruji.purchasemng.entity.transaction.TransactionType;
 import io.github.oruji.purchasemng.entity.user.User;
 import io.github.oruji.purchasemng.exception.UserIdAlreadyExistException;
 import io.github.oruji.purchasemng.repository.user.UserRepository;
@@ -13,6 +16,7 @@ import io.github.oruji.purchasemng.service.user.UserService;
 import io.github.oruji.purchasemng.service.user.mapper.UserServiceMapper;
 import io.github.oruji.purchasemng.service.user.mapper.UserServiceMapperImpl;
 import io.github.oruji.purchasemng.service.user.model.UserModel;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -24,6 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -53,13 +58,21 @@ class UserServiceImplTest {
 	@MockBean
 	private TransactionService transactionService;
 
+	private UserModel userModel;
+
+	private User user;
+
+	@BeforeEach
+	void setup() {
+		userModel = createUserModel("test-user-name", "password");
+		user = createUser("test-user-name", "encodedPassword");
+	}
+
 	@Test
-	void givenDuplicateUser_whenSave_thenThrowsError() {
-		UserModel userModel = createUserModel("test-user-name", "password");
-		User user = createUser("test-user-name", "encodedPassword");
+	void givenDuplicateUser_whenRegister_thenThrowsError() {
 		when(userRepository.findByUsername("test-user-name")).thenReturn(Optional.of(user));
 		Exception exception = assertThrows(UserIdAlreadyExistException.class,
-				() -> userService.save(userModel));
+				() -> userService.register(userModel));
 		assertEquals("user with the given username already exists", exception.getMessage());
 		verify(userRepository).findByUsername("test-user-name");
 		verify(userRepository, times(0)).save(any());
@@ -67,21 +80,26 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	void givenNewUser_whenSave_thenSuccess() {
-		UserModel userModel = createUserModel("test-user-name", "password");
-		User user = createUser("test-user-name", "encodedPassword");
+	void givenNewUser_whenRegister_thenSuccess() {
 		when(userRepository.findByUsername("password")).thenReturn(Optional.empty());
 		when(passwordEncoder.encode("password")).thenReturn("encodedPassword");
 		when(userRepository.save(any())).thenReturn(user);
 
-		UserModel resultUserModel = userService.save(userModel);
+		userService.register(userModel);
 
 		ArgumentCaptor<User> userCapture = ArgumentCaptor.forClass(User.class);
 		verify(userRepository).save(userCapture.capture());
-		assertEquals(resultUserModel.getUsername(), userModel.getUsername());
-		assertEquals(resultUserModel.getPassword(), "encodedPassword");
-		assertEquals(resultUserModel.getInitialBalance(), userModel.getInitialBalance());
-		assertEquals(userCapture.getValue().getBalance(), new BigDecimal(100_000));
+		assertEquals(new BigDecimal(100_000), userCapture.getValue().getBalance());
+		assertEquals(new BigDecimal(100_000), userCapture.getValue().getInitialBalance());
+		assertEquals("test-user-name", userCapture.getValue().getUsername());
+		assertEquals("encodedPassword", userCapture.getValue().getPassword());
+
+		ArgumentCaptor<Transaction> transactionCapture = ArgumentCaptor.forClass(Transaction.class);
+		verify(transactionService).save(transactionCapture.capture());
+		assertEquals(new BigDecimal(100_000), transactionCapture.getValue().getAmount());
+		assertNotNull(transactionCapture.getValue().getTrackingCode());
+		assertEquals(TransactionStatus.SUCCESSFUL, transactionCapture.getValue().getStatus());
+		assertEquals(TransactionType.ALLOCATION, transactionCapture.getValue().getType()); ;
 	}
 
 	private User createUser(String username, String password) {

@@ -26,16 +26,16 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "User Management", description = "APIs for managing users")
 public class UserController {
 
-	private final UserService service;
+	private final UserService userService;
 
-	private final UserControllerMapper mapper;
+	private final UserControllerMapper userControllerMapper;
 
 	@Operation(summary = "Create a new user", description = "Creates a new user with the provided details.")
 	@PostMapping()
 	public ResponseEntity<ApiResponse<CreateUserResponse>> create(@Valid @RequestBody CreateUserRequest request) {
 		log.info("Create User Api called with username: {}", request.getUsername());
-		UserModel userModel = service.save(mapper.toUserModel(request));
-		CreateUserResponse response = mapper.toCreateUserResponse(userModel);
+		UserModel userModel = userService.register(userControllerMapper.toUserModel(request));
+		CreateUserResponse response = userControllerMapper.toCreateUserResponse(userModel);
 		log.info("User Created successfully");
 		ApiResponse<CreateUserResponse> apiResponse = new ApiResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(),
 				response);

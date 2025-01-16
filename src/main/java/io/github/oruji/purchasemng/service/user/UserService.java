@@ -5,7 +5,7 @@ import io.github.oruji.purchasemng.service.user.model.UserModel;
 
 public interface UserService {
 
-	UserModel save(UserModel model);
+	UserModel register(UserModel model);
 
 	User findByUsername(String username);
 

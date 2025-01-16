@@ -25,9 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-	private final UserRepository repository;
+	private final UserRepository userRepository;
 
-	private final UserServiceMapper mapper;
+	private final UserServiceMapper userServiceMapper;
 
 	private final PasswordEncoder passwordEncoder;
 
@@ -37,31 +37,31 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public UserModel save(UserModel model) {
-		repository.findByUsername(model.getUsername()).ifPresent(user -> {
+	public UserModel register(UserModel model) {
+		userRepository.findByUsername(model.getUsername()).ifPresent(user -> {
 			log.warn("Duplicate user attempt for username: {}", model.getUsername());
 			throw new UserIdAlreadyExistException("user with the given username already exists");
 		});
-		User user = mapper.toUser(model, passwordEncoder.encode(model.getPassword()));
+		User user = userServiceMapper.toUser(model, passwordEncoder.encode(model.getPassword()));
 		user.deposit(model.getInitialBalance());
-		user = repository.save(user);
+		user = userRepository.save(user);
 		Transaction transaction = transactionServiceMapper.toTransaction(user, model.getInitialBalance(),
 				TransactionType.ALLOCATION);
 		transaction.successful();
 		transaction.setTrackingCode(UUID.randomUUID().toString());
 		transactionService.save(transaction);
-		return mapper.toUserModel(user);
+		return userServiceMapper.toUserModel(user);
 	}
 
 	@Override
 	public User findByUsername(String username) {
-		return repository.findByUsername(username)
+		return userRepository.findByUsername(username)
 				.orElseThrow(() -> new UserNotFoundException("There is not user for username: " + username));
 	}
 
 	@Override
 	public User save(User user) {
-		return repository.save(user);
+		return userRepository.save(user);
 	}
 
 }

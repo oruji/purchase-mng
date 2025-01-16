@@ -29,9 +29,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Purchase Management", description = "APIs for managing purchases")
 public class PurchaseController {
 
-	private final PurchaseService service;
+	private final PurchaseService purchaseService;
 
-	private final PurchaseControllerMapper mapper;
+	private final PurchaseControllerMapper purchaseControllerMapper;
 
 	private final JwtUtil jwtUtil;
 
@@ -42,8 +42,8 @@ public class PurchaseController {
 			@Valid @RequestBody PurchaseCreationRequest request) {
 		log.info("Create Purchase Api called: {}", request);
 		String username = jwtUtil.getUsernameFromToken(authorizationHeader);
-		PurchaseModel model = service.save(mapper.toPurchaseModel(request, username));
-		PurchaseCreationResponse response = mapper.toCreatePurchaseResponse(model);
+		PurchaseModel model = purchaseService.order(purchaseControllerMapper.toPurchaseModel(request, username));
+		PurchaseCreationResponse response = purchaseControllerMapper.toCreatePurchaseResponse(model);
 		log.info("Purchase Created successfully");
 		ApiResponse<PurchaseCreationResponse> apiResponse = new ApiResponse<>(HttpStatus.OK.value(),
 				HttpStatus.OK.name(), response);
@@ -54,8 +54,8 @@ public class PurchaseController {
 	@PostMapping("/verify/{trackingCode}")
 	public ResponseEntity<ApiResponse<PurchaseCreationResponse>> verify(@PathVariable String trackingCode) {
 		log.info("Verify Purchase Api called: {}", trackingCode);
-		PurchaseModel model = service.verify(trackingCode);
-		PurchaseCreationResponse response = mapper.toCreatePurchaseResponse(model);
+		PurchaseModel model = purchaseService.verify(trackingCode);
+		PurchaseCreationResponse response = purchaseControllerMapper.toCreatePurchaseResponse(model);
 		log.info("Purchase Verified successfully");
 		ApiResponse<PurchaseCreationResponse> apiResponse = new ApiResponse<>(HttpStatus.OK.value(),
 				HttpStatus.OK.name(), response);

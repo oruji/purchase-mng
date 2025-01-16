@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface PurchaseService {
 
-	PurchaseModel save(PurchaseModel model);
+	PurchaseModel order(PurchaseModel model);
 
 	PurchaseModel verify(String trackingCode);
 

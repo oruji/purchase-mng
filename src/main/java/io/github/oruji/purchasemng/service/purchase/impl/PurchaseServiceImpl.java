@@ -29,9 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PurchaseServiceImpl implements PurchaseService {
 
-	private final PurchaseRepository repository;
+	private final PurchaseRepository purchaseRepository;
 
-	private final PurchaseServiceMapper mapper;
+	private final PurchaseServiceMapper purchaseServiceMapper;
 
 	private final UserService userService;
 
@@ -41,52 +41,56 @@ public class PurchaseServiceImpl implements PurchaseService {
 
 	@Override
 	@Transactional
-	public PurchaseModel save(PurchaseModel model) {
+	public PurchaseModel order(PurchaseModel model) {
 		User user = userService.findByUsername(model.getUser().getUsername());
 		user.withdraw(model.getAmount());
 		user = userService.save(user);
-		Purchase purchase = mapper.toPurchase(model, UUID.randomUUID().toString(), user);
-		purchase = repository.save(purchase);
+
+		Purchase purchase = purchaseServiceMapper.toPurchase(model, UUID.randomUUID().toString(), user);
+		purchase = purchaseRepository.save(purchase);
+		PurchaseModel purchaseModel = purchaseServiceMapper.toPurchaseModel(purchase);
+
 		Transaction transaction = transactionServiceMapper.toTransaction(user, purchase, model.getAmount(),
 				TransactionType.PURCHASE);
 		transaction.setTrackingCode(UUID.randomUUID().toString());
 		transaction.pending();
 		transactionService.save(transaction);
-		return mapper.toPurchaseModel(purchase);
+
+		return purchaseModel;
 	}
 
 	@Override
 	public PurchaseModel verify(String trackingCode) {
-		Purchase purchase = repository.findByTrackingCode(trackingCode)
+		Purchase purchase = purchaseRepository.findByTrackingCode(trackingCode)
 				.orElseThrow(() -> new PurchaseNotFoundException("Purchase Not found!"));
 		if (!purchase.isVerfied()) {
 			purchase.verify();
-			purchase = repository.save(purchase);
+			purchase = purchaseRepository.save(purchase);
 			Transaction transaction = transactionService.findByPurchase(purchase);
 			transaction.successful();
 			transactionService.save(transaction);
 		}
-		return mapper.toPurchaseModel(purchase);
+		return purchaseServiceMapper.toPurchaseModel(purchase);
 	}
 
 	@Override
 	public List<PurchaseModel> getPossibleReverses(PurchaseStatus status, LocalDateTime localDateTime,
 			Pageable pageable) {
-		List<Purchase> purchases = repository.findByStatusAndModificationDateIsBefore(status, localDateTime);
-		return mapper.toPurchaseModels(purchases);
+		List<Purchase> purchases = purchaseRepository.findByStatusAndModificationDateIsBefore(status, localDateTime);
+		return purchaseServiceMapper.toPurchaseModels(purchases);
 	}
 
 	@Override
 	@Transactional
 	public void reverse(PurchaseModel model) {
-		Purchase purchase = repository.findByTrackingCode(model.getTrackingCode())
+		Purchase purchase = purchaseRepository.findByTrackingCode(model.getTrackingCode())
 				.orElseThrow(() -> new PurchaseNotFoundException("Purchase Not found!"));
 		User user = purchase.getUser();
 		user.deposit(purchase.getAmount());
 		user = userService.save(user);
 		purchase.setUser(user);
 		purchase.reverse();
-		repository.save(purchase);
+		purchaseRepository.save(purchase);
 		Transaction transaction = transactionService.findByPurchase(purchase);
 		transaction.failed();
 		transactionService.save(transaction);

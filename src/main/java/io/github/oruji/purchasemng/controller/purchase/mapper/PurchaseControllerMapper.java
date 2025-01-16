@@ -13,8 +13,8 @@ public interface PurchaseControllerMapper {
 	@Mapping(target = "status", ignore = true)
 	@Mapping(target = "trackingCode", ignore = true)
 	@Mapping(target = "user.username", source = "username")
-	PurchaseModel toPurchaseModel(PurchaseCreationRequest request, String username);
+	PurchaseModel toPurchaseModel(PurchaseCreationRequest purchaseCreationRequest, String username);
 
-	PurchaseCreationResponse toCreatePurchaseResponse(PurchaseModel model);
+	PurchaseCreationResponse toCreatePurchaseResponse(PurchaseModel purchaseModel);
 
 }
