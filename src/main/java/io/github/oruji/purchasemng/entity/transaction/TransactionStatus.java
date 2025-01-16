@@ -9,15 +9,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum TransactionStatus {
 
-	PENDING(0), FAILED(1), SUCCESSFUL(2);
+	PENDING,
+	FAILED,
+	SUCCESSFUL;
 
-	private final Integer value;
-
-	public static TransactionStatus fromValue(int value) {
+	public static TransactionStatus fromValue(String name) {
 		return Stream.of(values())
-				.filter(type -> type.value == value)
+				.filter(type -> type.name().equals(name))
 				.findFirst()
-				.orElseThrow(() -> new IllegalArgumentException("no transaction status found for value: " + value));
+				.orElseThrow(() -> new IllegalArgumentException("no transaction status found for value: " + name));
 	}
 
 }

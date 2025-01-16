@@ -1,14 +1,14 @@
-package io.github.oruji.purchasemng.entity.purchase;
+package io.github.oruji.purchasemng.dto.purchase;
 
 import java.util.stream.Stream;
 
-public enum PurchaseStatus {
+public enum PurchaseStatusDto {
 
 	INITIATED,
 	REVERSED,
 	VERIFIED;
 
-	public static PurchaseStatus fromName(String name) {
+	public static PurchaseStatusDto fromName(String name) {
 		return Stream.of(values())
 				.filter(status -> status.name().equals(name))
 				.findFirst()

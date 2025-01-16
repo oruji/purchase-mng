@@ -9,15 +9,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum TransactionType {
 
-	ALLOCATION(0), PURCHASE(1), REVERSE(2);
+	ALLOCATION,
+	PURCHASE,
+	REVERSE;
 
-	private final Integer value;
-
-	public static TransactionType fromValue(int value) {
+	public static TransactionType fromValue(String name) {
 		return Stream.of(values())
-				.filter(type -> type.value == value)
+				.filter(type -> type.name().equals(name))
 				.findFirst()
-				.orElseThrow(() -> new IllegalArgumentException("no transaction type found for value: " + value));
+				.orElseThrow(() -> new IllegalArgumentException("no transaction type found for value: " + name));
 	}
 
 }

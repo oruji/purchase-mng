@@ -38,12 +38,12 @@ public class Transaction extends BaseEntity {
 
 	@NotNull
 	@Column(nullable = false)
-	@Enumerated(EnumType.ORDINAL)
+	@Enumerated(EnumType.STRING)
 	private TransactionType type;
 
 	@NotNull
 	@Column(nullable = false)
-	@Enumerated(EnumType.ORDINAL)
+	@Enumerated(EnumType.STRING)
 	private TransactionStatus status;
 
 	@NotNull

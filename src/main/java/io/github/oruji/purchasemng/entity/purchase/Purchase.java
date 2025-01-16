@@ -36,7 +36,7 @@ public class Purchase extends BaseEntity {
 
 	@NotNull
 	@Column(nullable = false)
-	@Enumerated(EnumType.ORDINAL)
+	@Enumerated(EnumType.STRING)
 	private PurchaseStatus status = PurchaseStatus.INITIATED;
 
 	@NotNull

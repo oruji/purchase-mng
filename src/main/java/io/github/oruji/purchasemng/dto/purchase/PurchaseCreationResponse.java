@@ -11,6 +11,6 @@ public class PurchaseCreationResponse {
 
 	private BigDecimal amount;
 
-	private Integer status;
+	private PurchaseStatusDto status;
 
 }
