@@ -1,12 +1,15 @@
 package io.github.oruji.purchasemng.controller.token;
 
+import io.github.oruji.purchasemng.dto.ApiResponse;
 import io.github.oruji.purchasemng.dto.token.TokenRequest;
 import io.github.oruji.purchasemng.dto.token.TokenResponse;
+import io.github.oruji.purchasemng.dto.user.CreateUserResponse;
 import io.github.oruji.purchasemng.utility.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -31,7 +34,7 @@ public class TokenController {
 	private final UserDetailsService userDetailsService;
 
 	@PostMapping()
-	public ResponseEntity<TokenResponse> getToken(
+	public ResponseEntity<ApiResponse<TokenResponse>> getToken(
 			@Valid @RequestBody TokenRequest request) throws BadCredentialsException {
 		try {
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -43,8 +46,9 @@ public class TokenController {
 
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
 		final String jwt = jwtUtil.generateToken(userDetails);
-
-		return ResponseEntity.ok(new TokenResponse(jwt));
+		ApiResponse<TokenResponse> apiResponse = new ApiResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(),
+				new TokenResponse(jwt));
+		return ResponseEntity.ok(apiResponse);
 	}
 
 }

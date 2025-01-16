@@ -1,14 +1,16 @@
 package io.github.oruji.purchasemng.controller.user;
 
 import io.github.oruji.purchasemng.controller.user.mapper.UserControllerMapper;
+import io.github.oruji.purchasemng.dto.ApiResponse;
 import io.github.oruji.purchasemng.dto.user.CreateUserRequest;
-import io.github.oruji.purchasemng.service.user.UserService;
 import io.github.oruji.purchasemng.dto.user.CreateUserResponse;
+import io.github.oruji.purchasemng.service.user.UserService;
 import io.github.oruji.purchasemng.service.user.model.UserModel;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,12 +28,14 @@ public class UserController {
 	private final UserControllerMapper mapper;
 
 	@PostMapping()
-	public ResponseEntity<CreateUserResponse> create(@Valid @RequestBody CreateUserRequest request) {
+	public ResponseEntity<ApiResponse<CreateUserResponse>> create(@Valid @RequestBody CreateUserRequest request) {
 		log.info("Create User Api called with username: {}", request.getUsername());
 		UserModel userModel = service.save(mapper.toUserModel(request));
 		CreateUserResponse response = mapper.toCreateUserResponse(userModel);
 		log.info("User Created successfully");
-		return ResponseEntity.ok(response);
+		ApiResponse<CreateUserResponse> apiResponse = new ApiResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(),
+				response);
+		return ResponseEntity.ok(apiResponse);
 	}
 
 }

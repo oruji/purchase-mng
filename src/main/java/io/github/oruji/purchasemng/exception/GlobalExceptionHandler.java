@@ -1,8 +1,11 @@
 package io.github.oruji.purchasemng.exception;
 
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+
+import io.github.oruji.purchasemng.dto.ApiResponse;
+import io.github.oruji.purchasemng.dto.ErrorResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,27 +18,30 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-		Map<String, String> errors = new HashMap<>();
-		ex.getBindingResult().getFieldErrors().forEach(error ->
-				errors.put(error.getField(), error.getDefaultMessage())
-		);
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+	public ResponseEntity<ApiResponse<Void>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+		List<ErrorResponse> errorResponses = new ArrayList<>();
+		ex.getBindingResult().getFieldErrors().forEach(error -> {
+			errorResponses.add(new ErrorResponse(error.getField(), error.getDefaultMessage()));
+		});
+		ApiResponse<Void> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(),
+				errorResponses);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	}
 
-	@ExceptionHandler(UserIdAlreadyExistException.class)
-	public ResponseEntity<String> handleDuplicateUserException(UserIdAlreadyExistException ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+	@ExceptionHandler({ UserIdAlreadyExistException.class, PurchaseNotFoundException.class })
+	public ResponseEntity<ApiResponse<Void>> handleDuplicateUserException(UserIdAlreadyExistException ex) {
+		ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(), ex.getMessage());
+		ApiResponse<Void> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(),
+				List.of(error));
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	}
 
 	@ExceptionHandler(BadCredentialsException.class)
-	public ResponseEntity<String> handleBadCredentialsException(BadCredentialsException ex) {
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
-	}
-
-	@ExceptionHandler(PurchaseNotFoundException.class)
-	public ResponseEntity<String> handlePurchaseNotFoundException(PurchaseNotFoundException ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+	public ResponseEntity<ApiResponse<Void>> handleBadCredentialsException(BadCredentialsException ex) {
+		ErrorResponse error = new ErrorResponse(HttpStatus.UNAUTHORIZED.getReasonPhrase(), ex.getMessage());
+		ApiResponse<Void> response = new ApiResponse<>(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.name(),
+				List.of(error));
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 	}
 
 }
