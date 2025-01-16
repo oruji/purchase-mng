@@ -24,7 +24,7 @@ public class TransactionServiceImpl implements TransactionService {
 	public Transaction findByPurchase(Purchase purchase) {
 		return repository.findByPurchase(purchase)
 				.orElseThrow(() -> new PurchaseDoesntHaveTransactionException(
-						"There is no Transaction for purchase: " + purchase.getTrackingCode()));
+						String.format("There is no Transaction for purchase: %s", purchase.getTrackingCode())));
 	}
 
 }

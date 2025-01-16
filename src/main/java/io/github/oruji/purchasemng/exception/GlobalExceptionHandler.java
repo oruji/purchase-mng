@@ -28,8 +28,9 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	}
 
-	@ExceptionHandler({ UserIdAlreadyExistException.class, PurchaseNotFoundException.class })
-	public ResponseEntity<ApiResponse<Void>> handleDuplicateUserException(UserIdAlreadyExistException ex) {
+	@ExceptionHandler({ UserIdAlreadyExistException.class, PurchaseNotFoundException.class,
+			PurchaseInappropriateStatusException.class })
+	public ResponseEntity<ApiResponse<Void>> handleCustomExceptions(Exception ex) {
 		ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(), ex.getMessage());
 		ApiResponse<Void> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(),
 				List.of(error));

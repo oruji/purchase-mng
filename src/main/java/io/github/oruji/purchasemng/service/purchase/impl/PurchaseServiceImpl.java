@@ -9,6 +9,7 @@ import io.github.oruji.purchasemng.entity.purchase.PurchaseStatus;
 import io.github.oruji.purchasemng.entity.transaction.Transaction;
 import io.github.oruji.purchasemng.entity.transaction.TransactionType;
 import io.github.oruji.purchasemng.entity.user.User;
+import io.github.oruji.purchasemng.exception.PurchaseInappropriateStatusException;
 import io.github.oruji.purchasemng.exception.PurchaseNotFoundException;
 import io.github.oruji.purchasemng.repository.purchase.PurchaseRepository;
 import io.github.oruji.purchasemng.service.purchase.PurchaseService;
@@ -62,7 +63,15 @@ public class PurchaseServiceImpl implements PurchaseService {
 	@Override
 	public PurchaseModel verify(String trackingCode) {
 		Purchase purchase = purchaseRepository.findByTrackingCode(trackingCode)
-				.orElseThrow(() -> new PurchaseNotFoundException("Purchase Not found!"));
+				.orElseThrow(() -> new PurchaseNotFoundException(
+						String.format("Purchase Not found! by trackingCode: %s", trackingCode)));
+
+		if (purchase.isReversed()) {
+			throw new PurchaseInappropriateStatusException(
+					String.format("The purchase status: %s is not acceptable for verification.", purchase.getStatus())
+			);
+		}
+
 		if (!purchase.isVerfied()) {
 			purchase.verify();
 			purchase = purchaseRepository.save(purchase);
@@ -85,7 +94,14 @@ public class PurchaseServiceImpl implements PurchaseService {
 	@Transactional
 	public void reverse(PurchaseModel model) {
 		Purchase purchase = purchaseRepository.findByTrackingCode(model.getTrackingCode())
-				.orElseThrow(() -> new PurchaseNotFoundException("Purchase Not found!"));
+				.orElseThrow(() -> new PurchaseNotFoundException(
+						String.format("Purchase Not found by trackingCode: %s", model.getTrackingCode())));
+
+		if (!purchase.isInitiated()) {
+			throw new PurchaseInappropriateStatusException(
+					String.format("The purchase status: %s is not acceptable for reverse.", purchase.getStatus())
+			);
+		}
 
 		User user = purchase.getUser();
 		user.deposit(purchase.getAmount());

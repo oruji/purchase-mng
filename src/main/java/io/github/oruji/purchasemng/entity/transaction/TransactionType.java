@@ -17,7 +17,8 @@ public enum TransactionType {
 		return Stream.of(values())
 				.filter(type -> type.name().equals(name))
 				.findFirst()
-				.orElseThrow(() -> new IllegalArgumentException("no transaction type found for value: " + name));
+				.orElseThrow(() -> new IllegalArgumentException(
+						String.format("no transaction type found for value: %s", name)));
 	}
 
 }

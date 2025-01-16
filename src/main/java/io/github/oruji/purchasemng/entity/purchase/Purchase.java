@@ -55,4 +55,12 @@ public class Purchase extends BaseEntity {
 		return PurchaseStatus.VERIFIED.equals(status);
 	}
 
+	public Boolean isInitiated() {
+		return PurchaseStatus.INITIATED.equals(status);
+	}
+
+	public Boolean isReversed() {
+		return PurchaseStatus.REVERSED.equals(status);
+	}
+
 }

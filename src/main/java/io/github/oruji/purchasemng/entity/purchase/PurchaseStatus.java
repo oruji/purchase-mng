@@ -12,6 +12,7 @@ public enum PurchaseStatus {
 		return Stream.of(values())
 				.filter(status -> status.name().equals(name))
 				.findFirst()
-				.orElseThrow(() -> new IllegalArgumentException("No purchase status found for name: " + name));
+				.orElseThrow(() -> new IllegalArgumentException(
+						String.format("No purchase status found for name: %s", name)));
 	}
 }

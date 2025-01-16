@@ -9,6 +9,7 @@ import io.github.oruji.purchasemng.entity.transaction.Transaction;
 import io.github.oruji.purchasemng.entity.transaction.TransactionStatus;
 import io.github.oruji.purchasemng.entity.transaction.TransactionType;
 import io.github.oruji.purchasemng.entity.user.User;
+import io.github.oruji.purchasemng.exception.PurchaseInappropriateStatusException;
 import io.github.oruji.purchasemng.repository.purchase.PurchaseRepository;
 import io.github.oruji.purchasemng.service.purchase.PurchaseService;
 import io.github.oruji.purchasemng.service.purchase.mapper.PurchaseServiceMapper;
@@ -30,6 +31,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -109,6 +111,19 @@ class PurchaseServiceImplTest {
 	}
 
 	@Test
+	void givenReversedStatusPurchase_whenVerify_thenError() {
+		String trackingCode = "my-test-purchase-tracking-code";
+		Purchase purchase = createPurchase(new BigDecimal(10_000), "my-test-user-name", trackingCode,
+				PurchaseStatus.REVERSED);
+		when(purchaseRepository.findByTrackingCode(trackingCode)).thenReturn(Optional.of(purchase));
+
+		Exception exception = assertThrows(PurchaseInappropriateStatusException.class,
+				() -> purchaseService.verify(trackingCode));
+		assertEquals("The purchase status: REVERSED is not acceptable for verification.", exception.getMessage());
+		verifyNoInteractions(transactionService);
+	}
+
+	@Test
 	void givenVerifiedPurchaseTrackingcode_whenVerify_thenIdempotent() {
 		String trackingCode = "my-test-purchase-tracking-code";
 		Purchase purchase = createPurchase(new BigDecimal(10_000), "my-test-user-name", trackingCode,
@@ -152,6 +167,23 @@ class PurchaseServiceImplTest {
 		assertEquals(TransactionType.PURCHASE, transactionCapture.getValue().getType());
 		assertNotNull(transactionCapture.getValue().getTrackingCode());
 	}
+
+	@Test
+	void givenVerifiedPurchase_whenReverse_thenError() {
+		String trackingCode = "my-test-purchase-tracking-code";
+		PurchaseModel purchaseModel = createPurchaseModel(new BigDecimal(10_000), "my-test-user-name", trackingCode,
+				PurchaseStatus.VERIFIED);
+		Purchase purchase = createPurchase(new BigDecimal(10_000), "my-test-user-name", trackingCode,
+				PurchaseStatus.VERIFIED);
+		when(purchaseRepository.findByTrackingCode(trackingCode)).thenReturn(Optional.of(purchase));
+		when(transactionService.findByPurchase(any())).thenReturn(createTransaction(new BigDecimal(10_000)));
+
+		Exception exception = assertThrows(PurchaseInappropriateStatusException.class,
+				() -> purchaseService.reverse(purchaseModel));
+		assertEquals("The purchase status: VERIFIED is not acceptable for reverse.", exception.getMessage());
+		verifyNoInteractions(transactionService, userService);
+	}
+
 
 	private Transaction createTransaction(BigDecimal amount) {
 		Transaction transaction = new Transaction();

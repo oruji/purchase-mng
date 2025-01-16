@@ -17,7 +17,8 @@ public enum TransactionStatus {
 		return Stream.of(values())
 				.filter(type -> type.name().equals(name))
 				.findFirst()
-				.orElseThrow(() -> new IllegalArgumentException("no transaction status found for value: " + name));
+				.orElseThrow(() -> new IllegalArgumentException(
+						String.format("no transaction status found for value: %s", name)));
 	}
 
 }
