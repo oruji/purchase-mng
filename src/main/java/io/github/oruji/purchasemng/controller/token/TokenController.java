@@ -45,9 +45,9 @@ public class TokenController {
 		}
 
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-		final String jwt = jwtUtil.generateToken(userDetails);
+		final String token = jwtUtil.generateToken(userDetails);
 		ApiResponse<TokenResponse> apiResponse = new ApiResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(),
-				new TokenResponse(jwt));
+				new TokenResponse(token));
 		return ResponseEntity.ok(apiResponse);
 	}
 

@@ -7,6 +7,8 @@ import io.github.oruji.purchasemng.dto.purchase.PurchaseCreationResponse;
 import io.github.oruji.purchasemng.service.purchase.PurchaseService;
 import io.github.oruji.purchasemng.service.purchase.model.PurchaseModel;
 import io.github.oruji.purchasemng.utility.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/purchases")
+@Tag(name = "Purchase Management", description = "APIs for managing purchases")
 public class PurchaseController {
 
 	private final PurchaseService service;
@@ -32,6 +35,7 @@ public class PurchaseController {
 
 	private final JwtUtil jwtUtil;
 
+	@Operation(summary = "Create a new purchase", description = "Creates a new purchase with the provided details.")
 	@PostMapping()
 	public ResponseEntity<ApiResponse<PurchaseCreationResponse>> create(
 			@RequestHeader("Authorization") String authorizationHeader,
@@ -46,6 +50,7 @@ public class PurchaseController {
 		return ResponseEntity.ok(apiResponse);
 	}
 
+	@Operation(summary = "Verify purchase", description = "Verifies the purchase after creating it.")
 	@PostMapping("/verify/{trackingCode}")
 	public ResponseEntity<ApiResponse<PurchaseCreationResponse>> verify(@PathVariable String trackingCode) {
 		log.info("Verify Purchase Api called: {}", trackingCode);

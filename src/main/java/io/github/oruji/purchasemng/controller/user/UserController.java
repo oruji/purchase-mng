@@ -6,6 +6,8 @@ import io.github.oruji.purchasemng.dto.user.CreateUserRequest;
 import io.github.oruji.purchasemng.dto.user.CreateUserResponse;
 import io.github.oruji.purchasemng.service.user.UserService;
 import io.github.oruji.purchasemng.service.user.model.UserModel;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,12 +23,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
+@Tag(name = "User Management", description = "APIs for managing users")
 public class UserController {
 
 	private final UserService service;
 
 	private final UserControllerMapper mapper;
 
+	@Operation(summary = "Create a new user", description = "Creates a new user with the provided details.")
 	@PostMapping()
 	public ResponseEntity<ApiResponse<CreateUserResponse>> create(@Valid @RequestBody CreateUserRequest request) {
 		log.info("Create User Api called with username: {}", request.getUsername());
