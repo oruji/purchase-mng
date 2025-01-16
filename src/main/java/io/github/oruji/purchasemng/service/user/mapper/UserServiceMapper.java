@@ -16,6 +16,7 @@ public interface UserServiceMapper {
 	@Mapping(target = "modificationDate", ignore = true)
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "balance", ignore = true)
+	@Mapping(target = "version", ignore = true)
 	User toUser(UserModel model, String password);
 
 	UserModel toUserModel(User savedUser);

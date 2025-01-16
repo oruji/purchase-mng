@@ -33,6 +33,7 @@ public interface TransactionServiceMapper {
 	@Mapping(target = "modificationDate", ignore = true)
 	@Mapping(target = "trackingCode", ignore = true)
 	@Mapping(target = "status", ignore = true)
+	@Mapping(target = "version", ignore = true)
 	Transaction toTransaction(User user, Purchase purchase, BigDecimal amount, TransactionType type);
 
 }

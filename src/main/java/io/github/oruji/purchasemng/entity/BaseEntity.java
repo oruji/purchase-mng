@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -31,5 +32,8 @@ public abstract class BaseEntity {
 
 	@LastModifiedDate
 	private LocalDateTime modificationDate;
+
+	@Version
+	private Integer version;
 
 }
