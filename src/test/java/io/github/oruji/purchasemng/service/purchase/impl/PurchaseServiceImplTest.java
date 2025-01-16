@@ -120,6 +120,39 @@ class PurchaseServiceImplTest {
 		verifyNoInteractions(transactionService);
 	}
 
+	@Test
+	void givenInitiatedPurchase_whenReverse_thenReverse() {
+		String trackingCode = "my-test-purchase-tracking-code";
+		PurchaseModel purchaseModel = createPurchaseModel(new BigDecimal(10_000), "my-test-user-name", trackingCode,
+				PurchaseStatus.INITIATED);
+		Purchase purchase = createPurchase(new BigDecimal(10_000), "my-test-user-name", trackingCode,
+				PurchaseStatus.INITIATED);
+		when(purchaseRepository.findByTrackingCode(trackingCode)).thenReturn(Optional.of(purchase));
+		when(transactionService.findByPurchase(any())).thenReturn(createTransaction(new BigDecimal(10_000)));
+
+		purchaseService.reverse(purchaseModel);
+
+		ArgumentCaptor<User> userCapture = ArgumentCaptor.forClass(User.class);
+		verify(userService).save(userCapture.capture());
+		assertEquals(new BigDecimal(110_000), userCapture.getValue().getBalance());
+		assertEquals(new BigDecimal(100_000), userCapture.getValue().getInitialBalance());
+		assertEquals("my-test-user-name", userCapture.getValue().getUsername());
+		assertEquals("password", userCapture.getValue().getPassword());
+
+		ArgumentCaptor<Purchase> purchaseCapture = ArgumentCaptor.forClass(Purchase.class);
+		verify(purchaseRepository).save(purchaseCapture.capture());
+		assertEquals(new BigDecimal(10_000), purchaseCapture.getValue().getAmount());
+		assertEquals(PurchaseStatus.REVERSED, purchaseCapture.getValue().getStatus());
+		assertNotNull(purchaseCapture.getValue().getTrackingCode());
+
+		ArgumentCaptor<Transaction> transactionCapture = ArgumentCaptor.forClass(Transaction.class);
+		verify(transactionService).save(transactionCapture.capture());
+		assertEquals(new BigDecimal(10_000), transactionCapture.getValue().getAmount());
+		assertEquals(TransactionStatus.FAILED, transactionCapture.getValue().getStatus());
+		assertEquals(TransactionType.PURCHASE, transactionCapture.getValue().getType());
+		assertNotNull(transactionCapture.getValue().getTrackingCode());
+	}
+
 	private Transaction createTransaction(BigDecimal amount) {
 		Transaction transaction = new Transaction();
 		transaction.setType(TransactionType.PURCHASE);
@@ -136,6 +169,16 @@ class PurchaseServiceImplTest {
 		purchase.setAmount(amount);
 		purchase.setTrackingCode(trackingCode);
 		purchase.setStatus(purchaseStatus);
+		return purchase;
+	}
+
+	private PurchaseModel createPurchaseModel(BigDecimal amount, String username, String trackingCode,
+			PurchaseStatus purchaseStatus) {
+		PurchaseModel purchase = new PurchaseModel();
+		purchase.setUser(createUserModel(username, "password"));
+		purchase.setAmount(amount);
+		purchase.setStatus(purchaseStatus);
+		purchase.setTrackingCode(trackingCode);
 		return purchase;
 	}
 
