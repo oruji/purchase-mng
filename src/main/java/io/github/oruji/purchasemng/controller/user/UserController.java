@@ -31,14 +31,22 @@ public class UserController {
 	private final UserControllerMapper userControllerMapper;
 
 	@Operation(summary = "Register a new user", description = "Registers a new user with the provided details.")
-	@PostMapping()
+	@PostMapping
 	public ResponseEntity<ApiResponse<UserRegisterResponse>> register(@Valid @RequestBody UserRegisterRequest request) {
-		log.info("User Registration Api called with username: {}", request.getUsername());
+		log.info("User registration API called with username: {}", request.getUsername());
+
 		UserModel userModel = userService.register(userControllerMapper.toUserModel(request));
 		UserRegisterResponse response = userControllerMapper.toCreateUserResponse(userModel);
-		log.info("User Registered successfully");
-		ApiResponse<UserRegisterResponse> apiResponse = new ApiResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(),
-				response);
+
+		log.info("User registered successfully with username: {}", request.getUsername());
+		return createSuccessResponse(response);
+	}
+	private ResponseEntity<ApiResponse<UserRegisterResponse>> createSuccessResponse(UserRegisterResponse response) {
+		ApiResponse<UserRegisterResponse> apiResponse = new ApiResponse<>(
+				HttpStatus.OK.value(),
+				HttpStatus.OK.name(),
+				response
+		);
 		return ResponseEntity.ok(apiResponse);
 	}
 

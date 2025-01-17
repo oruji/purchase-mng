@@ -1,5 +1,6 @@
 package io.github.oruji.purchasemng.service.user.impl;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import io.github.oruji.purchasemng.entity.transaction.Transaction;
@@ -36,33 +37,56 @@ public class UserServiceImpl implements UserService {
 	private final TransactionServiceMapper transactionServiceMapper;
 
 	@Override
-	@Transactional
-	public UserModel register(UserModel model) {
-		userRepository.findByUsername(model.getUsername()).ifPresent(user -> {
-			log.warn("Duplicate user attempt for username: {}", model.getUsername());
-			throw new UserIdAlreadyExistException("user with the given username already exists");
-		});
-		User user = userServiceMapper.toUser(model, passwordEncoder.encode(model.getPassword()));
-		user.deposit(model.getInitialBalance());
-		user = userRepository.save(user);
-		Transaction transaction = transactionServiceMapper.toTransaction(user, model.getInitialBalance(),
-				TransactionType.ALLOCATION);
-		transaction.successful();
-		transaction.setTrackingCode(UUID.randomUUID().toString());
-		transactionService.save(transaction);
-		return userServiceMapper.toUserModel(user);
-	}
-
-	@Override
 	public User findByUsername(String username) {
-		return userRepository.findByUsername(username)
-				.orElseThrow(() -> new UserNotFoundException(String.format("There is not user for username: %s",
-						username)));
+		return userRepository.findByUsername(username).orElseThrow(() -> createUserNotFoundException(username));
 	}
 
 	@Override
 	public User save(User user) {
 		return userRepository.save(user);
+	}
+
+	@Override
+	@Transactional
+	public UserModel register(UserModel userModel) {
+		validateUserDoesNotExist(userModel.getUsername());
+
+		User user = createUserFromModel(userModel);
+		user.deposit(userModel.getInitialBalance());
+		user = userRepository.save(user);
+
+		createAndSaveInitialTransaction(user, userModel.getInitialBalance());
+
+		return userServiceMapper.toUserModel(user);
+	}
+
+	private void validateUserDoesNotExist(String username) {
+		userRepository.findByUsername(username).ifPresent(user -> {
+			log.warn("Duplicate user attempt for username: {}", username);
+			throw new UserIdAlreadyExistException("user with the given username already exists");
+		});
+	}
+
+	private User createUserFromModel(UserModel model) {
+		String encodedPassword = passwordEncoder.encode(model.getPassword());
+		return userServiceMapper.toUser(model, encodedPassword);
+	}
+
+	private void createAndSaveInitialTransaction(User user, BigDecimal initialBalance) {
+		Transaction transaction = transactionServiceMapper.toTransaction(user, initialBalance, TransactionType.ALLOCATION);
+		transaction.successful();
+		transaction.setTrackingCode(generateTrackingCode());
+		transactionService.save(transaction);
+	}
+
+	private String generateTrackingCode() {
+		return UUID.randomUUID().toString();
+	}
+
+	private UserNotFoundException createUserNotFoundException(String username) {
+		String errorMessage = String.format("User not found for username: %s", username);
+		log.warn(errorMessage);
+		return new UserNotFoundException(errorMessage);
 	}
 
 }

@@ -27,27 +27,41 @@ import org.springframework.web.bind.annotation.RestController;
 public class TokenController {
 
 	private final AuthenticationManager authenticationManager;
-
 	private final JwtUtil jwtUtil;
-
 	private final UserDetailsService userDetailsService;
 
-	@PostMapping()
-	public ResponseEntity<ApiResponse<TokenResponse>> getToken(
-			@Valid @RequestBody TokenRequest request) throws BadCredentialsException {
-		try {
-			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-					request.getUsername(), request.getPassword()));
-		} catch (BadCredentialsException badCredentialsException) {
-			log.error("Incorrect username or password");
-			throw badCredentialsException;
-		}
+	@PostMapping
+	public ResponseEntity<ApiResponse<TokenResponse>> getToken(@Valid @RequestBody TokenRequest request) {
+		log.info("Token generation request received for username: {}", request.getUsername());
+		authenticateUser(request.getUsername(), request.getPassword());
 
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-		final String token = jwtUtil.generateToken(userDetails);
-		ApiResponse<TokenResponse> apiResponse = new ApiResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(),
-				new TokenResponse(token));
-		return ResponseEntity.ok(apiResponse);
+		String token = generateJwtToken(request.getUsername());
+		TokenResponse response = new TokenResponse(token);
+		log.info("Token generated successfully for username: {}", request.getUsername());
+
+		return createSuccessResponse(response);
 	}
 
+	private void authenticateUser(String username, String password) {
+		try {
+			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+		} catch (BadCredentialsException ex) {
+			log.error("Incorrect username or password for user: {}", username);
+			throw ex;
+		}
+	}
+
+	private String generateJwtToken(String username) {
+		UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+		return jwtUtil.generateToken(userDetails);
+	}
+
+	private ResponseEntity<ApiResponse<TokenResponse>> createSuccessResponse(TokenResponse response) {
+		ApiResponse<TokenResponse> apiResponse = new ApiResponse<>(
+				HttpStatus.OK.value(),
+				HttpStatus.OK.name(),
+				response
+		);
+		return ResponseEntity.ok(apiResponse);
+	}
 }

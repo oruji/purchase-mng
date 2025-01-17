@@ -30,36 +30,44 @@ import org.springframework.web.bind.annotation.RestController;
 public class PurchaseController {
 
 	private final PurchaseService purchaseService;
-
 	private final PurchaseControllerMapper purchaseControllerMapper;
-
 	private final JwtUtil jwtUtil;
 
 	@Operation(summary = "Order a new purchase", description = "Orders a new purchase with the provided details.")
-	@PostMapping()
+	@PostMapping
 	public ResponseEntity<ApiResponse<OrderResponse>> order(
 			@RequestHeader("Authorization") String authorizationHeader,
 			@Valid @RequestBody OrderRequest orderRequest) {
-		log.info("Order Purchase Api called: {}", orderRequest);
+		log.info("Order Purchase API called for request: {}", orderRequest);
+
 		String username = jwtUtil.getUsernameFromToken(authorizationHeader);
-		PurchaseModel model = purchaseService.order(purchaseControllerMapper.toPurchaseModel(orderRequest, username));
-		OrderResponse response = purchaseControllerMapper.toCreatePurchaseResponse(model);
-		log.info("Order Created successfully");
-		ApiResponse<OrderResponse> apiResponse = new ApiResponse<>(HttpStatus.OK.value(),
-				HttpStatus.OK.name(), response);
-		return ResponseEntity.ok(apiResponse);
+		PurchaseModel purchaseModel = purchaseControllerMapper.toPurchaseModel(orderRequest, username);
+
+		PurchaseModel createdPurchase = purchaseService.order(purchaseModel);
+		OrderResponse response = purchaseControllerMapper.toCreatePurchaseResponse(createdPurchase);
+
+		log.info("Order created successfully for user: {}", username);
+		return createSuccessResponse(response);
 	}
 
 	@Operation(summary = "Verify purchase", description = "Verifies the purchase after creating it.")
 	@PostMapping("/verify/{trackingCode}")
 	public ResponseEntity<ApiResponse<OrderResponse>> verify(@PathVariable String trackingCode) {
-		log.info("Verify Purchase Api called: {}", trackingCode);
-		PurchaseModel model = purchaseService.verify(trackingCode);
-		OrderResponse response = purchaseControllerMapper.toCreatePurchaseResponse(model);
-		log.info("Purchase Verified successfully");
-		ApiResponse<OrderResponse> apiResponse = new ApiResponse<>(HttpStatus.OK.value(),
-				HttpStatus.OK.name(), response);
-		return ResponseEntity.ok(apiResponse);
+		log.info("Verify Purchase API called for tracking code: {}", trackingCode);
+
+		PurchaseModel verifiedPurchase = purchaseService.verify(trackingCode);
+		OrderResponse response = purchaseControllerMapper.toCreatePurchaseResponse(verifiedPurchase);
+
+		log.info("Purchase verified successfully for tracking code: {}", trackingCode);
+		return createSuccessResponse(response);
 	}
 
+	private ResponseEntity<ApiResponse<OrderResponse>> createSuccessResponse(OrderResponse response) {
+		ApiResponse<OrderResponse> apiResponse = new ApiResponse<>(
+				HttpStatus.OK.value(),
+				HttpStatus.OK.name(),
+				response
+		);
+		return ResponseEntity.ok(apiResponse);
+	}
 }
