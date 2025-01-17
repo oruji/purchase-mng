@@ -30,7 +30,7 @@ This is a Spring Boot application for managing user registrations, purchases, an
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-repo/purchase-management.git
+git clone git@github.com:oruji/purchase-mng.git
 cd purchase-management
 ```
 
@@ -39,7 +39,7 @@ Create a MySQL database named purchase_management.
 
 Update the application.properties file with your database credentials:
 ```bash
-spring.datasource.url=jdbc:mysql://localhost:3306/purchase_management
+spring.datasource.url=jdbc:mysql://localhost:3306/purchase_mng_db
 spring.datasource.username=your-username
 spring.datasource.password=your-password
 spring.jpa.hibernate.ddl-auto=update
@@ -60,7 +60,7 @@ The application will start on http://localhost:8080.
 
 - **Request**:
 
-```json
+```bash
 curl -L 'localhost:8080/api/users' -H 'Content-Type: application/json' -d '{
     "username": "oruji2",
     "password": "123456",
@@ -78,13 +78,27 @@ curl -L 'localhost:8080/api/users' -H 'Content-Type: application/json' -d '{
     "errors": null
 }
 ```
+If you omit any mandatory fields in your request, the API will return a 400 Bad Request error with detailed information about the validation errors. Below is an example of the error response:
+```json
+{
+    "status": 400,
+    "message": "BAD_REQUEST",
+    "data": null,
+    "errors": [
+        {
+            "field": "username",
+            "message": "must not be blank"
+        }
+    ]
+}
+```
 ### 2. Generate a Token
 - **Endpoint**: POST /api/tokens
 
 - **Description**: Generate a JWT token for authentication.
 
 - **Request**:
-```json
+```bash
 curl -L 'localhost:8080/api/tokens' -H 'Content-Type: application/json' -d '{
     "username": "oruji2",
     "password": "123456"
@@ -108,7 +122,7 @@ curl -L 'localhost:8080/api/tokens' -H 'Content-Type: application/json' -d '{
 - **Description**: Register a new purchase with a unique tracking code.
 
 - **Request**:
-```json
+```bash
 curl -L 'localhost:8080/api/purchases' -H 'Content-Type: application/json' -H 'Authorization: Bearer <token>' -d '{
     "amount": "10000"
 }'
@@ -133,7 +147,7 @@ curl -L 'localhost:8080/api/purchases' -H 'Content-Type: application/json' -H 'A
 - **Description**: Verify a purchase using its tracking code.
 
 - **Request**:
-```json
+```bash
 curl -L -X POST 'localhost:8080/api/purchases/verify/1adb3279-069c-4da9-8a14-38bf639087ec' -H 'Authorization: Bearer <token>'
 ```
 - **Response**:
