@@ -52,6 +52,8 @@ mvn spring-boot:run
 ```
 The application will start on http://localhost:8080.
 
+And the swagger Link will http://localhost:8080/swagger-ui/index.html#/.
+
 ## API Documentation
 ### 1. Register a User
 - **Endpoint**: POST /api/users
