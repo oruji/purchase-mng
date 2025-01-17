@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static io.github.oruji.purchasemng.utility.ResponseUtil.createResponse;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -30,7 +32,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class PurchaseController {
 
 	private final PurchaseService purchaseService;
+
 	private final PurchaseControllerMapper purchaseControllerMapper;
+
 	private final JwtUtil jwtUtil;
 
 	@Operation(summary = "Order a new purchase", description = "Orders a new purchase with the provided details.")
@@ -47,7 +51,7 @@ public class PurchaseController {
 		OrderResponse response = purchaseControllerMapper.toCreatePurchaseResponse(createdPurchase);
 
 		log.info("Order created successfully for user: {}", username);
-		return createSuccessResponse(response);
+		return createResponse(response, HttpStatus.OK);
 	}
 
 	@Operation(summary = "Verify purchase", description = "Verifies the purchase after creating it.")
@@ -59,15 +63,7 @@ public class PurchaseController {
 		OrderResponse response = purchaseControllerMapper.toCreatePurchaseResponse(verifiedPurchase);
 
 		log.info("Purchase verified successfully for tracking code: {}", trackingCode);
-		return createSuccessResponse(response);
+		return createResponse(response, HttpStatus.OK);
 	}
 
-	private ResponseEntity<ApiResponse<OrderResponse>> createSuccessResponse(OrderResponse response) {
-		ApiResponse<OrderResponse> apiResponse = new ApiResponse<>(
-				HttpStatus.OK.value(),
-				HttpStatus.OK.name(),
-				response
-		);
-		return ResponseEntity.ok(apiResponse);
-	}
 }

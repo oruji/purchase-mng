@@ -14,35 +14,33 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import static io.github.oruji.purchasemng.utility.ResponseUtil.createResponse;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ApiResponse<Void>> handleValidationExceptions(MethodArgumentNotValidException ex) {
 		List<ErrorResponse> errorResponses = new ArrayList<>();
-		ex.getBindingResult().getFieldErrors().forEach(error -> {
-			errorResponses.add(new ErrorResponse(error.getField(), error.getDefaultMessage()));
-		});
-		ApiResponse<Void> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(),
-				errorResponses);
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		ex.getBindingResult().getFieldErrors().forEach(error -> errorResponses.add(new ErrorResponse(error.getField(),
+				error.getDefaultMessage())));
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(createResponse(errorResponses,
+				HttpStatus.BAD_REQUEST));
 	}
 
 	@ExceptionHandler({ UserIdAlreadyExistException.class, PurchaseNotFoundException.class,
 			PurchaseInappropriateStatusException.class, InsufficientBalanceException.class })
 	public ResponseEntity<ApiResponse<Void>> handleCustomExceptions(Exception ex) {
 		ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(), ex.getMessage());
-		ApiResponse<Void> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(),
-				List.of(error));
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(createResponse(List.of(error),
+				HttpStatus.BAD_REQUEST));
 	}
 
 	@ExceptionHandler(BadCredentialsException.class)
 	public ResponseEntity<ApiResponse<Void>> handleBadCredentialsException(BadCredentialsException ex) {
 		ErrorResponse error = new ErrorResponse(HttpStatus.UNAUTHORIZED.getReasonPhrase(), ex.getMessage());
-		ApiResponse<Void> response = new ApiResponse<>(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.name(),
-				List.of(error));
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createResponse(List.of(error),
+				HttpStatus.UNAUTHORIZED));
 	}
 
 }

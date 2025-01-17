@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static io.github.oruji.purchasemng.utility.ResponseUtil.createResponse;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -39,15 +41,7 @@ public class UserController {
 		UserRegisterResponse response = userControllerMapper.toCreateUserResponse(userModel);
 
 		log.info("User registered successfully with username: {}", request.getUsername());
-		return createSuccessResponse(response);
-	}
-	private ResponseEntity<ApiResponse<UserRegisterResponse>> createSuccessResponse(UserRegisterResponse response) {
-		ApiResponse<UserRegisterResponse> apiResponse = new ApiResponse<>(
-				HttpStatus.OK.value(),
-				HttpStatus.OK.name(),
-				response
-		);
-		return ResponseEntity.ok(apiResponse);
+		return createResponse(response, HttpStatus.OK);
 	}
 
 }

@@ -3,7 +3,6 @@ package io.github.oruji.purchasemng.service.purchase.impl;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 import io.github.oruji.purchasemng.entity.purchase.Purchase;
 import io.github.oruji.purchasemng.entity.purchase.PurchaseStatus;
@@ -26,6 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static io.github.oruji.purchasemng.utility.TextUtil.generateTrackingCode;
 
 @Slf4j
 @Service
@@ -71,14 +72,14 @@ public class PurchaseServiceImpl implements PurchaseService {
 	}
 
 	private Purchase createAndSavePurchase(PurchaseModel model, User user) {
-		Purchase purchase = purchaseServiceMapper.toPurchase(model, UUID.randomUUID().toString(), user);
+		Purchase purchase = purchaseServiceMapper.toPurchase(model, generateTrackingCode(), user);
 		return purchaseRepository.save(purchase);
 	}
 
 	private void createAndSaveTransaction(User user, Purchase purchase, BigDecimal amount) {
 		Transaction transaction = transactionServiceMapper.toTransaction(user, purchase, amount,
 				TransactionType.PURCHASE);
-		transaction.setTrackingCode(UUID.randomUUID().toString());
+		transaction.setTrackingCode(generateTrackingCode());
 		transaction.pending();
 		transactionService.save(transaction);
 	}

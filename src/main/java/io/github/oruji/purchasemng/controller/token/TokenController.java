@@ -4,6 +4,7 @@ import io.github.oruji.purchasemng.dto.ApiResponse;
 import io.github.oruji.purchasemng.dto.token.TokenRequest;
 import io.github.oruji.purchasemng.dto.token.TokenResponse;
 import io.github.oruji.purchasemng.utility.JwtUtil;
+import static io.github.oruji.purchasemng.utility.ResponseUtil.createResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +40,7 @@ public class TokenController {
 		TokenResponse response = new TokenResponse(token);
 		log.info("Token generated successfully for username: {}", request.getUsername());
 
-		return createSuccessResponse(response);
+		return createResponse(response, HttpStatus.OK);
 	}
 
 	private void authenticateUser(String username, String password) {
@@ -56,12 +57,4 @@ public class TokenController {
 		return jwtUtil.generateToken(userDetails);
 	}
 
-	private ResponseEntity<ApiResponse<TokenResponse>> createSuccessResponse(TokenResponse response) {
-		ApiResponse<TokenResponse> apiResponse = new ApiResponse<>(
-				HttpStatus.OK.value(),
-				HttpStatus.OK.name(),
-				response
-		);
-		return ResponseEntity.ok(apiResponse);
-	}
 }

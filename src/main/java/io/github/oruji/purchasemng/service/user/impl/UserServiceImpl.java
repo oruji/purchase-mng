@@ -1,7 +1,6 @@
 package io.github.oruji.purchasemng.service.user.impl;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 import io.github.oruji.purchasemng.entity.transaction.Transaction;
 import io.github.oruji.purchasemng.entity.transaction.TransactionType;
@@ -20,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static io.github.oruji.purchasemng.utility.TextUtil.generateTrackingCode;
 
 @Slf4j
 @Service
@@ -77,10 +78,6 @@ public class UserServiceImpl implements UserService {
 		transaction.successful();
 		transaction.setTrackingCode(generateTrackingCode());
 		transactionService.save(transaction);
-	}
-
-	private String generateTrackingCode() {
-		return UUID.randomUUID().toString();
 	}
 
 	private UserNotFoundException createUserNotFoundException(String username) {
