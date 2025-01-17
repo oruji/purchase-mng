@@ -38,7 +38,7 @@ cd purchase-management
 Create a MySQL database named purchase_management.
 
 Update the application.properties file with your database credentials:
-```bash
+```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/purchase_mng_db
 spring.datasource.username=your-username
 spring.datasource.password=your-password
