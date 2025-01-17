@@ -2,8 +2,8 @@ package io.github.oruji.purchasemng.controller.purchase;
 
 import io.github.oruji.purchasemng.controller.purchase.mapper.PurchaseControllerMapper;
 import io.github.oruji.purchasemng.dto.ApiResponse;
-import io.github.oruji.purchasemng.dto.purchase.OrderRequest;
-import io.github.oruji.purchasemng.dto.purchase.OrderResponse;
+import io.github.oruji.purchasemng.dto.purchase.PurchaseRequest;
+import io.github.oruji.purchasemng.dto.purchase.PurchaseResponse;
 import io.github.oruji.purchasemng.service.purchase.PurchaseService;
 import io.github.oruji.purchasemng.service.purchase.model.PurchaseModel;
 import io.github.oruji.purchasemng.utility.JwtUtil;
@@ -39,16 +39,16 @@ public class PurchaseController {
 
 	@Operation(summary = "Order a new purchase", description = "Orders a new purchase with the provided details.")
 	@PostMapping
-	public ResponseEntity<ApiResponse<OrderResponse>> order(
+	public ResponseEntity<ApiResponse<PurchaseResponse>> order(
 			@RequestHeader("Authorization") String authorizationHeader,
-			@Valid @RequestBody OrderRequest orderRequest) {
-		log.info("Order Purchase API called for request: {}", orderRequest);
+			@Valid @RequestBody PurchaseRequest purchaseRequest) {
+		log.info("Order Purchase API called for request: {}", purchaseRequest);
 
 		String username = jwtUtil.getUsernameFromToken(authorizationHeader);
-		PurchaseModel purchaseModel = purchaseControllerMapper.toPurchaseModel(orderRequest, username);
+		PurchaseModel purchaseModel = purchaseControllerMapper.toPurchaseModel(purchaseRequest, username);
 
 		PurchaseModel createdPurchase = purchaseService.order(purchaseModel);
-		OrderResponse response = purchaseControllerMapper.toCreatePurchaseResponse(createdPurchase);
+		PurchaseResponse response = purchaseControllerMapper.toCreatePurchaseResponse(createdPurchase);
 
 		log.info("Order created successfully for user: {}", username);
 		return createResponse(response, HttpStatus.OK);
@@ -56,11 +56,11 @@ public class PurchaseController {
 
 	@Operation(summary = "Verify purchase", description = "Verifies the purchase after creating it.")
 	@PostMapping("/verify/{trackingCode}")
-	public ResponseEntity<ApiResponse<OrderResponse>> verify(@PathVariable String trackingCode) {
+	public ResponseEntity<ApiResponse<PurchaseResponse>> verify(@PathVariable String trackingCode) {
 		log.info("Verify Purchase API called for tracking code: {}", trackingCode);
 
 		PurchaseModel verifiedPurchase = purchaseService.verify(trackingCode);
-		OrderResponse response = purchaseControllerMapper.toCreatePurchaseResponse(verifiedPurchase);
+		PurchaseResponse response = purchaseControllerMapper.toCreatePurchaseResponse(verifiedPurchase);
 
 		log.info("Purchase verified successfully for tracking code: {}", trackingCode);
 		return createResponse(response, HttpStatus.OK);

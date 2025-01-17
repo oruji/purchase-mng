@@ -124,7 +124,13 @@ curl -L 'localhost:8080/api/tokens' -H 'Content-Type: application/json' -d '{
 - **Request**:
 ```bash
 curl -L 'localhost:8080/api/purchases' -H 'Content-Type: application/json' -H 'Authorization: Bearer <token>' -d '{
-    "amount": "10000"
+    "amount": "10000",
+    "items": [
+        {
+            "name": "pencil",
+            "count": 2
+        }
+    ]
 }'
 ```
 - Response:

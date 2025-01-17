@@ -1,13 +1,17 @@
 package io.github.oruji.purchasemng.entity.purchase;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import io.github.oruji.purchasemng.entity.BaseEntity;
 import io.github.oruji.purchasemng.entity.user.User;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
@@ -42,6 +46,10 @@ public class Purchase extends BaseEntity {
 	@NotNull
 	@ManyToOne
 	private User user;
+
+	@ElementCollection
+	@CollectionTable(name = "purchase_items", joinColumns = @JoinColumn(name = "purchase_id"))
+	private List<PurchaseItem> items;
 
 	public void verify() {
 		this.setStatus(PurchaseStatus.VERIFIED);

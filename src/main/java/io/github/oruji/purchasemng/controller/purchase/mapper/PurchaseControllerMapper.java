@@ -1,7 +1,7 @@
 package io.github.oruji.purchasemng.controller.purchase.mapper;
 
-import io.github.oruji.purchasemng.dto.purchase.OrderRequest;
-import io.github.oruji.purchasemng.dto.purchase.OrderResponse;
+import io.github.oruji.purchasemng.dto.purchase.PurchaseRequest;
+import io.github.oruji.purchasemng.dto.purchase.PurchaseResponse;
 import io.github.oruji.purchasemng.service.purchase.model.PurchaseModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,8 +13,8 @@ public interface PurchaseControllerMapper {
 	@Mapping(target = "status", ignore = true)
 	@Mapping(target = "trackingCode", ignore = true)
 	@Mapping(target = "user.username", source = "username")
-	PurchaseModel toPurchaseModel(OrderRequest orderRequest, String username);
+	PurchaseModel toPurchaseModel(PurchaseRequest purchaseRequest, String username);
 
-	OrderResponse toCreatePurchaseResponse(PurchaseModel purchaseModel);
+	PurchaseResponse toCreatePurchaseResponse(PurchaseModel purchaseModel);
 
 }

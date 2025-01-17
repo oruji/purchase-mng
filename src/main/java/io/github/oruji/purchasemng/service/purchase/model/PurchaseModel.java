@@ -1,6 +1,7 @@
 package io.github.oruji.purchasemng.service.purchase.model;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import io.github.oruji.purchasemng.entity.purchase.PurchaseStatus;
 import io.github.oruji.purchasemng.service.user.model.UserModel;
@@ -16,5 +17,7 @@ public class PurchaseModel {
 	private PurchaseStatus status;
 
 	private UserModel user;
+
+	private List<PurchaseItemModel> items;
 
 }
