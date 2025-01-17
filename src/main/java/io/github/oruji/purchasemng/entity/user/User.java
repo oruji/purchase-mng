@@ -6,6 +6,7 @@ import io.github.oruji.purchasemng.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,6 +38,7 @@ public class User extends BaseEntity {
 
 	@NotNull
 	@Column(nullable = false)
+	@DecimalMin(value = "0.00", message = "Balance must not be less than zero")
 	private BigDecimal balance = new BigDecimal(0);
 
 	public void deposit(BigDecimal amount) {

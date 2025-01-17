@@ -9,6 +9,7 @@ import io.github.oruji.purchasemng.entity.transaction.Transaction;
 import io.github.oruji.purchasemng.entity.transaction.TransactionStatus;
 import io.github.oruji.purchasemng.entity.transaction.TransactionType;
 import io.github.oruji.purchasemng.entity.user.User;
+import io.github.oruji.purchasemng.exception.InsufficientBalanceException;
 import io.github.oruji.purchasemng.exception.PurchaseInappropriateStatusException;
 import io.github.oruji.purchasemng.repository.purchase.PurchaseRepository;
 import io.github.oruji.purchasemng.service.purchase.PurchaseService;
@@ -62,6 +63,8 @@ class PurchaseServiceImplTest {
 	@Test
 	void givenNewPurchase_whenOrder_thenSuccess() {
 		when(userService.findByUsername("my-test-user-name")).thenReturn(createUser("my-test-user-name", "password"));
+		when(purchaseRepository.save(any())).thenReturn(createPurchase(new BigDecimal(10_000), "my-test-user-name",
+				"trackingCode", PurchaseStatus.INITIATED));
 
 		purchaseService.order(createPurchaseModel(new BigDecimal(10_000), "my-test-user-name"));
 
@@ -84,6 +87,15 @@ class PurchaseServiceImplTest {
 		assertEquals(TransactionStatus.PENDING, transactionCapture.getValue().getStatus());
 		assertEquals(TransactionType.PURCHASE, transactionCapture.getValue().getType());
 		assertNotNull(transactionCapture.getValue().getTrackingCode());
+	}
+
+	@Test
+	void givenPurchaseMoreThanBalance_whenOrder_thenError() {
+		when(userService.findByUsername("my-test-user-name")).thenReturn(createUser("my-test-user-name", "password"));
+		Exception exception = assertThrows(InsufficientBalanceException.class,
+				() -> purchaseService.order(createPurchaseModel(new BigDecimal(200_000), "my-test-user-name")));
+		assertEquals("Insufficient balance for user: my-test-user-name", exception.getMessage());
+		verifyNoInteractions(purchaseRepository, transactionService);
 	}
 
 	@Test
@@ -183,7 +195,6 @@ class PurchaseServiceImplTest {
 		assertEquals("The purchase status: VERIFIED is not acceptable for reverse.", exception.getMessage());
 		verifyNoInteractions(transactionService, userService);
 	}
-
 
 	private Transaction createTransaction(BigDecimal amount) {
 		Transaction transaction = new Transaction();

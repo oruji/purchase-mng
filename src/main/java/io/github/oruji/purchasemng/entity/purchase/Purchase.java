@@ -51,7 +51,7 @@ public class Purchase extends BaseEntity {
 		this.setStatus(PurchaseStatus.REVERSED);
 	}
 
-	public Boolean isVerfied() {
+	public Boolean isVerified() {
 		return PurchaseStatus.VERIFIED.equals(status);
 	}
 

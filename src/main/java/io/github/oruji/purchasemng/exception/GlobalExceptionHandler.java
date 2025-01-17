@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler({ UserIdAlreadyExistException.class, PurchaseNotFoundException.class,
-			PurchaseInappropriateStatusException.class })
+			PurchaseInappropriateStatusException.class, InsufficientBalanceException.class })
 	public ResponseEntity<ApiResponse<Void>> handleCustomExceptions(Exception ex) {
 		ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(), ex.getMessage());
 		ApiResponse<Void> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(),
