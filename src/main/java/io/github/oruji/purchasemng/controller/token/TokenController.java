@@ -3,7 +3,6 @@ package io.github.oruji.purchasemng.controller.token;
 import io.github.oruji.purchasemng.dto.ApiResponse;
 import io.github.oruji.purchasemng.dto.token.TokenRequest;
 import io.github.oruji.purchasemng.dto.token.TokenResponse;
-import io.github.oruji.purchasemng.dto.user.CreateUserResponse;
 import io.github.oruji.purchasemng.utility.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -2,13 +2,15 @@ package io.github.oruji.purchasemng.dto.purchase;
 
 import java.math.BigDecimal;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class PurchaseCreationRequest {
+public class OrderResponse {
 
-	@NotNull
+	private String trackingCode;
+
 	private BigDecimal amount;
+
+	private PurchaseStatusDto status;
 
 }

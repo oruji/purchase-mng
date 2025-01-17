@@ -2,8 +2,8 @@ package io.github.oruji.purchasemng.controller.user;
 
 import io.github.oruji.purchasemng.controller.user.mapper.UserControllerMapper;
 import io.github.oruji.purchasemng.dto.ApiResponse;
-import io.github.oruji.purchasemng.dto.user.CreateUserRequest;
-import io.github.oruji.purchasemng.dto.user.CreateUserResponse;
+import io.github.oruji.purchasemng.dto.user.UserRegisterRequest;
+import io.github.oruji.purchasemng.dto.user.UserRegisterResponse;
 import io.github.oruji.purchasemng.service.user.UserService;
 import io.github.oruji.purchasemng.service.user.model.UserModel;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,14 +30,14 @@ public class UserController {
 
 	private final UserControllerMapper userControllerMapper;
 
-	@Operation(summary = "Create a new user", description = "Creates a new user with the provided details.")
+	@Operation(summary = "Register a new user", description = "Registers a new user with the provided details.")
 	@PostMapping()
-	public ResponseEntity<ApiResponse<CreateUserResponse>> create(@Valid @RequestBody CreateUserRequest request) {
-		log.info("Create User Api called with username: {}", request.getUsername());
+	public ResponseEntity<ApiResponse<UserRegisterResponse>> register(@Valid @RequestBody UserRegisterRequest request) {
+		log.info("User Registration Api called with username: {}", request.getUsername());
 		UserModel userModel = userService.register(userControllerMapper.toUserModel(request));
-		CreateUserResponse response = userControllerMapper.toCreateUserResponse(userModel);
-		log.info("User Created successfully");
-		ApiResponse<CreateUserResponse> apiResponse = new ApiResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(),
+		UserRegisterResponse response = userControllerMapper.toCreateUserResponse(userModel);
+		log.info("User Registered successfully");
+		ApiResponse<UserRegisterResponse> apiResponse = new ApiResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(),
 				response);
 		return ResponseEntity.ok(apiResponse);
 	}
